@@ -20,20 +20,21 @@ class NoForeignModelInAnnotatedComponentContractTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.ktlintrules
+            package org.toilelibre.libe.ktlintrules
 
-import kotlin.String
-import org.toilelibre.libe.ktlintrules.A
+            import kotlin.String
+            import org.toilelibre.libe.ktlintrules.A
 
-@Action
-class B {
-    fun testingTheViolation(a: A) {
-    }
-}
+            @Action
+            class B {
+                fun testingTheViolation(a: A) {
+                }
+            }
 
-@ForeignModel
-data class A
-        """.trimIndent(), listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
+            @ForeignModel
+            data class A
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -50,20 +51,21 @@ data class A
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.ktlintrules
+            package org.toilelibre.libe.ktlintrules
 
-import kotlin.String
-import org.toilelibre.libe.ktlintrules.A
+            import kotlin.String
+            import org.toilelibre.libe.ktlintrules.A
 
-@ForeignModel
-data class A
+            @ForeignModel
+            data class A
 
-@Action
-class B {
-    fun testingTheViolation(a: A) {
-    }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
+            @Action
+            class B {
+                fun testingTheViolation(a: A) {
+                }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -80,23 +82,24 @@ class B {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.ktlintrules
+            package org.toilelibre.libe.ktlintrules
 
-import org.toilelibre.libe.ktlintrules.A
+            import org.toilelibre.libe.ktlintrules.A
 
-@ForeignModel
-data class A(val e: Int)
+            @ForeignModel
+            data class A(val e: Int)
 
-@ValueType
-data class C(val f: Int)
+            @ValueType
+            data class C(val f: Int)
 
-@Action
-class B {
-    fun testingTheViolation(): A {
-      return A()
-    }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
+            @Action
+            class B {
+                fun testingTheViolation(): A {
+                  return A()
+                }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -113,20 +116,21 @@ class B {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.ktlintrules
+            package org.toilelibre.libe.ktlintrules
 
-import kotlin.String
-import org.toilelibre.libe.ktlintrules.A
+            import kotlin.String
+            import org.toilelibre.libe.ktlintrules.A
 
-@ForeignModel
-data class A
+            @ForeignModel
+            data class A
 
-@DomainService
-class B {
-    fun testingTheViolation(a: A) {
-    }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
+            @DomainService
+            class B {
+                fun testingTheViolation(a: A) {
+                }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -142,21 +146,22 @@ class B {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.actions
+            package some.packages.actions
 
-import some.packages.domain.transverse.DomainDrivenDesignAnnotations.Action
-import some.packages.infra.database.Storage
-import org.bson.types.ObjectId
+            import some.packages.domain.transverse.DomainDrivenDesignAnnotations.Action
+            import some.packages.infra.database.Storage
+            import org.bson.types.ObjectId
 
-@Entity
-data class Instance(val id: Int)
+            @Entity
+            data class Instance(val id: Int)
 
-@Action
-class GetInstanceByRowId(private val storage: Storage) {
+            @Action
+            class GetInstanceByRowId(private val storage: Storage) {
 
-    infix fun retrievePaymentBy(`an id`: ObjectId): Instance? = storage rowMatching `an id`
-}
-        """.trimIndent(), listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
+                infix fun retrievePaymentBy(`an id`: ObjectId): Instance? = storage rowMatching `an id`
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()

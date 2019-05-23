@@ -14,19 +14,20 @@ class AllClassMembersMustBePrivateAndImmutableTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Repository
-class MyRepository(var dataSource: DataSource, private var jdbcUrl: String, val password: String){
+            @Repository
+            class MyRepository(var dataSource: DataSource, private var jdbcUrl: String, val password: String){
 
-  fun find(id: ObjectId){ // this should be allowed
-    var ref = id.toString() // this should be allowed
-    return dataSource.findOne(ref)
-  }
+              fun find(id: ObjectId){ // this should be allowed
+                var ref = id.toString() // this should be allowed
+                return dataSource.findOne(ref)
+              }
 
-}
+            }
 
-        """.trimIndent(), listOf(RuleSet("test", AllClassMembersMustBePrivateAndImmutable()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AllClassMembersMustBePrivateAndImmutable()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).containsExactly(
@@ -54,13 +55,14 @@ class MyRepository(var dataSource: DataSource, private var jdbcUrl: String, val 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Entity
-@ForeignModel
-data class Account(val id: ObjectId, val firstName: String, val lastName: String)
+            @Entity
+            @ForeignModel
+            data class Account(val id: ObjectId, val firstName: String, val lastName: String)
 
-        """.trimIndent(), listOf(RuleSet("test", AllClassMembersMustBePrivateAndImmutable()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AllClassMembersMustBePrivateAndImmutable()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).isEmpty()
@@ -72,15 +74,16 @@ data class Account(val id: ObjectId, val firstName: String, val lastName: String
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-class Tester(id: ObjectId) {
-  fun isValid(){
-    return true
-  }
-}
+            class Tester(id: ObjectId) {
+              fun isValid(){
+                return true
+              }
+            }
 
-        """.trimIndent(), listOf(RuleSet("test", AllClassMembersMustBePrivateAndImmutable()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AllClassMembersMustBePrivateAndImmutable()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).isEmpty()

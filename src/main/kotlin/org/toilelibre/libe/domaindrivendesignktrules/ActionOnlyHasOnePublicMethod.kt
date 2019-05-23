@@ -1,12 +1,12 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 
 class ActionOnlyHasOnePublicMethod : Rule("only-one-public-method-in-action") {
 
@@ -19,8 +19,9 @@ class ActionOnlyHasOnePublicMethod : Rule("only-one-public-method-in-action") {
 
         val classInformation = node.psi as KtClass
 
-        val methods = classInformation.methods +
-            classInformation.companionObjects.flatMap { it.methods }
+        val methods =
+            classInformation.methods +
+                classInformation.companionObjects.flatMap { it.methods }
 
         if (!classInformation.annotationNames.contains("Action")) return
 

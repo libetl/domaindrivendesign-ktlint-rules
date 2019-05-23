@@ -1,10 +1,10 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 
 class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right-package") {
     override fun visit(

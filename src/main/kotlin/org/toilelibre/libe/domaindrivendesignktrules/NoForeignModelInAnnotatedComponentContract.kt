@@ -1,14 +1,14 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
+import com.pinterest.ktlint.core.Rule
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.parameterTypes
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
-import com.pinterest.ktlint.core.Rule
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtClass
 
 class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-annotated-component-contract") {
 
@@ -47,10 +47,10 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
         }
 
         if (classInformation.annotationNames.intersect(
-                listOf(
-                    "Action", "DomainService", "Gateway", "Repository"
-                )
-            ).isEmpty()
+            listOf(
+                "Action", "DomainService", "Gateway", "Repository"
+            )
+        ).isEmpty()
         )
             return
 
@@ -68,8 +68,10 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
                 val fullyQualifiedName = currentFileImports[parameter.typeName]
                 if (fullyQualifiedName != null)
                     listOfMethodParameterTypes[fullyQualifiedName] =
-                        ((listOfMethodParameterTypes[fullyQualifiedName] ?: listOf()) +
-                            ("${classInformation.fqName}.${method.name}"))
+                        (
+                            (listOfMethodParameterTypes[fullyQualifiedName] ?: listOf()) +
+                                ("${classInformation.fqName}.${method.name}")
+                            )
             }
         }
 

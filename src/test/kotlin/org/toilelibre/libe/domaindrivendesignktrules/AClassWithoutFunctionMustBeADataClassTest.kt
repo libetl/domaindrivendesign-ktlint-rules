@@ -14,15 +14,16 @@ class AClassWithoutFunctionMustBeADataClassTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-class MyClass {
-  private var myFieldOne: Int
-  private var myFieldTwo: String
-  private var myFieldThree: Boolean
-}
+            class MyClass {
+              private var myFieldOne: Int
+              private var myFieldTwo: String
+              private var myFieldThree: Boolean
+            }
 
-        """.trimIndent(), listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).containsExactly(
@@ -41,15 +42,16 @@ class MyClass {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-class MyClass : Object {
-  private var myFieldOne: Int
-  private var myFieldTwo: String
-  private var myFieldThree: Boolean
-}
+            class MyClass : Object {
+              private var myFieldOne: Int
+              private var myFieldTwo: String
+              private var myFieldThree: Boolean
+            }
 
-        """.trimIndent(), listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).containsExactly(

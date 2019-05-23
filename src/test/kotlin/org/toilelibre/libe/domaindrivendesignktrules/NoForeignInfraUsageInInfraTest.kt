@@ -14,14 +14,15 @@ class NoForeignInfraUsageInInfraTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.infra.test1
+            package org.toilelibre.libe.infra.test1
 
-import org.toilelibre.libe.infra.test1.Test1
-import org.toilelibre.libe.infra.test2.Test2
+            import org.toilelibre.libe.infra.test1.Test1
+            import org.toilelibre.libe.infra.test2.Test2
 
-@DomainService
-class HelloIT
-        """.trimIndent(), listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
+            @DomainService
+            class HelloIT
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -33,14 +34,15 @@ class HelloIT
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.infra.test1
+            package org.toilelibre.libe.infra.test1
 
-import org.toilelibre.libe.infra.test1.Test1
-import org.toilelibre.libe.infra.test2.Test2
+            import org.toilelibre.libe.infra.test1.Test1
+            import org.toilelibre.libe.infra.test2.Test2
 
-@DomainService
-class MyTest
-        """.trimIndent(), listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
+            @DomainService
+            class MyTest
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -52,14 +54,15 @@ class MyTest
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.domain.ktlintrules
+            package org.toilelibre.libe.domain.ktlintrules
 
-import org.toilelibre.libe.infra.test1.Test1
-import org.toilelibre.libe.infra.test2.Test2
+            import org.toilelibre.libe.infra.test1.Test1
+            import org.toilelibre.libe.infra.test2.Test2
 
-@DomainService
-class Hello
-        """.trimIndent(), listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
+            @DomainService
+            class Hello
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -71,14 +74,15 @@ class Hello
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.infra.test1
+            package org.toilelibre.libe.infra.test1
 
-import org.toilelibre.libe.infra.test1.Test1
-import org.toilelibre.libe.infra.test1.Test11
+            import org.toilelibre.libe.infra.test1.Test1
+            import org.toilelibre.libe.infra.test1.Test11
 
-@Gateway
-class Hello
-        """.trimIndent(), listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
+            @Gateway
+            class Hello
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -90,14 +94,15 @@ class Hello
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.infra.test1
+            package org.toilelibre.libe.infra.test1
 
-import org.toilelibre.libe.infra.test1.Test1
-import org.toilelibre.libe.infra.test2.Test2
+            import org.toilelibre.libe.infra.test1.Test1
+            import org.toilelibre.libe.infra.test2.Test2
 
-@Configuration
-class TestConfiguration
-        """.trimIndent(), listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
+            @Configuration
+            class TestConfiguration
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -109,21 +114,23 @@ class TestConfiguration
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package org.toilelibre.libe.infra.test1
+            package org.toilelibre.libe.infra.test1
 
-import org.toilelibre.libe.infra.test1.Test1
-import org.toilelibre.libe.infra.test2.Test2
+            import org.toilelibre.libe.infra.test1.Test1
+            import org.toilelibre.libe.infra.test2.Test2
 
-@Gateway
-class Hello
-        """.trimIndent(), listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
+            @Gateway
+            class Hello
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignInfraUsageInInfra()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
             LintError(
                 line = 6, col = 1, ruleId = "test:no-foreign-infra-usage-in-infra",
-                detail = "This class : org.toilelibre.libe.infra.test1.Hello is in infra package and uses at least " +
-                    "one class from another infra package : [org.toilelibre.libe.infra.test2.Test2]"
+                detail =
+                    "This class : org.toilelibre.libe.infra.test1.Hello is in infra package and uses at least " +
+                        "one class from another infra package : [org.toilelibre.libe.infra.test2.Test2]"
             )
         )
     }

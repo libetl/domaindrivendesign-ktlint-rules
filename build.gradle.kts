@@ -1,7 +1,9 @@
+import groovy.lang.Closure
 import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import java.net.URI
 
 group = "org.toilelibre.libe"
 version = "1.0.0"
@@ -9,7 +11,8 @@ version = "1.0.0"
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "8.0.0"
     id("org.jetbrains.kotlin.jvm") version "1.3.31"
-    java
+    id("com.bmuschko.nexus") version "2.3.1"
+    `java-library`
     jacoco
     application
     idea
@@ -17,20 +20,26 @@ plugins {
     signing
 }
 
+application {
+    mainClassName = "org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider"
+}
+
 buildscript {
     dependencies {
         classpath(kotlin("gradle-plugin"))
         classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4+")
         classpath("org.jlleitschuh.gradle:ktlint-gradle:8.0.0")
+        classpath("com.bmuschko:gradle-nexus-plugin:2.3.1")
     }
 }
 
 allprojects {
     apply {
-        plugin("java")
+        plugin("java-library")
         plugin("kotlin")
         plugin("jacoco")
         plugin("org.jlleitschuh.gradle.ktlint")
+        plugin("com.bmuschko.nexus")
     }
 
     kotlin {
@@ -66,7 +75,8 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
 
-    dependencies { // you can create a ktlint run config with that
+    dependencies {
+        // you can create a ktlint run config with that
         compileOnly("com.pinterest:ktlint:0.32.0")
         compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20181211")
     }
@@ -110,6 +120,9 @@ dependencies {
 }
 repositories {
     mavenCentral()
+    maven {
+        url = URI("https://oss.sonatype.org/content/repositories/snapshots")
+    }
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
@@ -120,64 +133,54 @@ compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
 
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allJava)
+nexus {
+    sign = true
+    repositoryUrl = "https://oss.sonatype.org/nexus/content/repositories/internal/"
+    snapshotRepositoryUrl = "https://oss.sonatype.org/nexus/content/repositories/internal-snapshots/"
 }
 
-tasks.register<Jar>("javadocJar") {
-    archiveClassifier.set("javadoc")
-    from(tasks.javadoc.get().destinationDir)
+val sources by tasks.registering(Jar::class) {
+    baseName = project.name
+    classifier = "sources"
+    version = null
+    from(sourceSets.main.get().allSource)
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            from(components["kotlin"])
-        }
-        create<MavenPublication>("binaryAndSources") {
-            from(components["kotlin"])
-            artifact(tasks["sourcesJar"])
+            from(components["java"])
+            artifact(sources.get())
+            groupId = project.group.toString()
+            artifactId = project.path.removePrefix(":")
+                .replace(":", "-").toLowerCase()
+            version = project.version.toString()
+            pom {
+                name.set("domaindrivendesign-ktlint-rules")
+                description.set("Domain Driven Design ktlint rules")
+                url.set("https://github.com/libetl/domaindrivendesign-ktlint-rules")
+
+                scm {
+                    url.set("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
+                    connection.set("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
+                    developerConnection.set("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
+                }
+
+                licenses {
+                    license {
+                        name.set("The Apache Software License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("libetl")
+                        name.set("LiBe")
+                    }
+                }
+            }
         }
     }
-
-    repositories {
-        maven {
-            name = "oss-sonatype"
-            url = uri("https://oss.sonatype.org/")
-        }
-    }
 }
-
-signing {
-    val signingKey: String? by project
-    val signingPassword: String? by project
-    useGpgCmd()
-    sign(configurations.archives.get())
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(tasks["jar"])
-    sign(publishing.publications["maven"])
-}
-
-gradle.taskGraph.whenReady {
-    if (allTasks.any { it is Sign }) {
-        // Use Java's console to read from the console (no good for
-        // a CI environment)
-        val console = System.console()
-        console.printf("\n\nWe have to sign some things in this build." +
-                "\n\nPlease enter your signing details.\n\n")
-
-        val id = console.readLine("PGP Key Id: ")
-        val file = console.readLine("PGP Secret Key Ring File (absolute path): ")
-        val password = console.readPassword("PGP Private Key Password: ")
-
-        allprojects {
-            extra["signing.keyId"] = id
-            extra["signing.secretKeyRingFile"] = file
-            extra["signing.password"] = password
-        }
-
-        console.printf("\nThanks.\n\n")
-    }
-}
-

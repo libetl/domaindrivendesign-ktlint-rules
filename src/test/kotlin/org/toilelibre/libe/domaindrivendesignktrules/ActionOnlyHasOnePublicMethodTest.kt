@@ -14,28 +14,29 @@ class ActionOnlyHasOnePublicMethodTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Action
-class MyAction {
+            @Action
+            class MyAction {
 
-  fun doIt(){
-    this.doItBetter()
-  }
+              fun doIt(){
+                this.doItBetter()
+              }
 
-  private fun doItBetter(){
-  }
+              private fun doItBetter(){
+              }
 
-  fun doItAgain(){
-    this.doItAgainBetter()
-  }
+              fun doItAgain(){
+                this.doItAgainBetter()
+              }
 
-  private fun doItAgainBetter(){
-  }
+              private fun doItAgainBetter(){
+              }
 
-}
+            }
 
-        """.trimIndent(), listOf(RuleSet("test", ActionOnlyHasOnePublicMethod()))
+            """.trimIndent(),
+            listOf(RuleSet("test", ActionOnlyHasOnePublicMethod()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -52,16 +53,17 @@ class MyAction {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Action
-class MyAction {
+            @Action
+            class MyAction {
 
-  fun doIt(){
-  }
+              fun doIt(){
+              }
 
-}
-        """.trimIndent(), listOf(RuleSet("test", ActionOnlyHasOnePublicMethod()))
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", ActionOnlyHasOnePublicMethod()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()

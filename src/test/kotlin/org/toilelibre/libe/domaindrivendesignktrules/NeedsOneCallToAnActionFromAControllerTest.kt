@@ -13,22 +13,23 @@ class NeedsOneCallToAnActionFromAControllerTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Action
-class TheAction {
-  fun doIt(){
-  }
-}
+            @Action
+            class TheAction {
+              fun doIt(){
+              }
+            }
 
-@Controller
-class TheController {
-  fun someMethod() {
-    println("Hello world")
-  }
-}
+            @Controller
+            class TheController {
+              fun someMethod() {
+                println("Hello world")
+              }
+            }
 
-        """.trimIndent(), listOf(RuleSet("test", NeedsOneCallToAnActionFromAController()))
+            """.trimIndent(),
+            listOf(RuleSet("test", NeedsOneCallToAnActionFromAController()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).containsExactly(

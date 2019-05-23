@@ -14,16 +14,17 @@ class NoGenericCatchTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
 
-fun someMethod() {
- try {
-   println("Hello World")
- } catch (e: Exception){
- }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoGenericCatch()))
+            fun someMethod() {
+             try {
+               println("Hello World")
+             } catch (e: Exception){
+             }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoGenericCatch()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(

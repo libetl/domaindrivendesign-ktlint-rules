@@ -14,17 +14,18 @@ class NoBreakOrContinueTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-fun someMethod() {
-  var i
-  for (i in 0..10){
-    if (i == 2) continue
-    println (i + " (skipping 3)")
-    if (i == 4) break
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoBreakOrContinue()))
+            fun someMethod() {
+              var i
+              for (i in 0..10){
+                if (i == 2) continue
+                println (i + " (skipping 3)")
+                if (i == 4) break
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoBreakOrContinue()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(

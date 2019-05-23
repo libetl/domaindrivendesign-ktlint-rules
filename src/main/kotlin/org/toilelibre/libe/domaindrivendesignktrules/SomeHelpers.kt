@@ -22,8 +22,9 @@ object SomeHelpers {
     private fun determineType(type: KtTypeElement?): String? =
         when (type) {
             is KtUserType -> type.referenceExpression?.getReferencedName()!!
-            is KtNullableType -> if (type == type.innerType)
-                null else determineType(type.innerType as KtTypeElement)
+            is KtNullableType ->
+                if (type == type.innerType)
+                    null else determineType(type.innerType as KtTypeElement)
             is KtFunctionType -> type.text
             else -> null
         }
@@ -50,8 +51,10 @@ object SomeHelpers {
     val KtNamedFunction.parameters get() = this.valueParameterList?.parameters
     val KtNamedFunction.returnType get() = (this.colon as ASTNode?)?.nextCodeSibling()?.psi as KtTypeReference?
     val KtNamedFunction.parameterTypes
-        get() = ((this.parameters?.map { it.typeReference } ?: listOf<KtTypeReference>()) +
-            this.returnType).filterNotNull()
+        get() = (
+            (this.parameters?.map { it.typeReference } ?: listOf<KtTypeReference>()) +
+                this.returnType
+            ).filterNotNull()
     val KtParameter.typeName get() = this.typeReference?.typeName
     val KtTypeReference.typeName get() = determineType(this.typeElement)
 

@@ -1,10 +1,10 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotACatchElement
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtCatchClause
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotACatchElement
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 
 class NoGenericCatch : Rule("no-generic-catch") {
 
@@ -18,11 +18,14 @@ class NoGenericCatch : Rule("no-generic-catch") {
         val catch = node.psi as KtCatchClause
         val exceptionClass = catch.catchParameter?.typeName
 
-        if (listOf("Exception", "Throwable", "RuntimeException", "Error",
-                "java.lang.Exception",
-                "java.lang.Throwable",
-                "java.lang.RuntimeException",
-                "java.lang.Error").contains(exceptionClass))
+        if (listOf(
+            "Exception", "Throwable", "RuntimeException", "Error",
+            "java.lang.Exception",
+            "java.lang.Throwable",
+            "java.lang.RuntimeException",
+            "java.lang.Error"
+        ).contains(exceptionClass)
+        )
             emit.problemWith(node.startOffset, exceptionClass!!)
     }
 

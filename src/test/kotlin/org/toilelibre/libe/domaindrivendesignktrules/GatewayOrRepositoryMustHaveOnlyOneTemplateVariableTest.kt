@@ -14,18 +14,19 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
+            import org.springframework.web.client.RestTemplate
 
-@Gateway
-class MyGateway {
+            @Gateway
+            class MyGateway {
 
-  private val restTemplate1: RestTemplate
-  private val restTemplate2: RestTemplate
+              private val restTemplate1: RestTemplate
+              private val restTemplate2: RestTemplate
 
-}
-        """.trimIndent(), listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -44,19 +45,20 @@ class MyGateway {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
-import org.springframework.data.mongodb.core.MongoTemplate
+            import org.springframework.web.client.RestTemplate
+            import org.springframework.data.mongodb.core.MongoTemplate
 
-@Gateway
-class MyGateway {
+            @Gateway
+            class MyGateway {
 
-  private val restTemplate: RestTemplate
-  private val mongoTemplate: MongoTemplate
+              private val restTemplate: RestTemplate
+              private val mongoTemplate: MongoTemplate
 
-}
-        """.trimIndent(), listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -75,19 +77,20 @@ class MyGateway {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
-import org.springframework.data.mongodb.core.MongoTemplate
+            import org.springframework.web.client.RestTemplate
+            import org.springframework.data.mongodb.core.MongoTemplate
 
-@Repository
-class MyRepository {
+            @Repository
+            class MyRepository {
 
-  private val restTemplate: RestTemplate
-  private val mongoTemplate: MongoTemplate
+              private val restTemplate: RestTemplate
+              private val mongoTemplate: MongoTemplate
 
-}
-        """.trimIndent(), listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -106,18 +109,19 @@ class MyRepository {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
-import org.springframework.data.mongodb.core.MongoTemplate
+            import org.springframework.web.client.RestTemplate
+            import org.springframework.data.mongodb.core.MongoTemplate
 
-@Repository
-class MyRepository {
+            @Repository
+            class MyRepository {
 
-  private val mongoTemplate: MongoTemplate
+              private val mongoTemplate: MongoTemplate
 
-}
-        """.trimIndent(), listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -129,18 +133,19 @@ class MyRepository {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
-import org.springframework.data.mongodb.core.MongoTemplate
+            import org.springframework.web.client.RestTemplate
+            import org.springframework.data.mongodb.core.MongoTemplate
 
-@Repository
-class MyRepository {
+            @Repository
+            class MyRepository {
 
-  private val mongoTemplate: MongoTemplate
+              private val mongoTemplate: MongoTemplate
 
-}
-        """.trimIndent(), listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()

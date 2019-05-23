@@ -14,19 +14,20 @@ class DataClassNotAnnotatedTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@ForeignModel
-data class A(val i: Int)
+            @ForeignModel
+            data class A(val i: Int)
 
-data class B(val j: Int)
+            data class B(val j: Int)
 
-@ForeignModel
-data class C(val k: Int)
+            @ForeignModel
+            data class C(val k: Int)
 
-data class D(val l: Int)
+            data class D(val l: Int)
 
-        """.trimIndent(), listOf(RuleSet("test", DataClassNotAnnotated()))
+            """.trimIndent(),
+            listOf(RuleSet("test", DataClassNotAnnotated()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -51,17 +52,18 @@ data class D(val l: Int)
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@ForeignModel
-data class A(val i: Int)
+            @ForeignModel
+            data class A(val i: Int)
 
-@ValueType
-data class B(val j: Int)
+            @ValueType
+            data class B(val j: Int)
 
-@ForeignModel
-data class C(val k: Int)
-        """.trimIndent(), listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
+            @ForeignModel
+            data class C(val k: Int)
+            """.trimIndent(),
+            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()

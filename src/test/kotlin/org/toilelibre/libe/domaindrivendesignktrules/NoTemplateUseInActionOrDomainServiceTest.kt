@@ -14,19 +14,20 @@ class NoTemplateUseInActionOrDomainServiceTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
+            import org.springframework.web.client.RestTemplate
 
-@Action
-class MyAction {
+            @Action
+            class MyAction {
 
-  fun someMethod() {
-    val template = RestTemplate()
-    val template2 = org.springframework.data.mongodb.core.MongoTemplate()
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
+              fun someMethod() {
+                val template = RestTemplate()
+                val template2 = org.springframework.data.mongodb.core.MongoTemplate()
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -44,19 +45,20 @@ class MyAction {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
+            import org.springframework.web.client.RestTemplate
 
-@DomainService
-class MyDomainService {
+            @DomainService
+            class MyDomainService {
 
-  fun someMethod() {
-    val template = RestTemplate()
-    val template2 = org.springframework.data.mongodb.core.MongoTemplate()
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
+              fun someMethod() {
+                val template = RestTemplate()
+                val template2 = org.springframework.data.mongodb.core.MongoTemplate()
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -74,18 +76,19 @@ class MyDomainService {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@DomainService
-class MyAction {
+            @DomainService
+            class MyAction {
 
-  private val userProfileReader: UserProfileReader
+              private val userProfileReader: UserProfileReader
 
-  fun someMethod(val id: Int) {
-    val userProfile = userProfileReader.read(id)
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
+              fun someMethod(val id: Int) {
+                val userProfile = userProfileReader.read(id)
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -97,19 +100,20 @@ class MyAction {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-import org.springframework.web.client.RestTemplate
+            import org.springframework.web.client.RestTemplate
 
-@Gateway
-class MyGateway {
+            @Gateway
+            class MyGateway {
 
-  fun someMethod() {
-    val template = RestTemplate()
-    val template2 = org.springframework.data.mongodb.core.MongoTemplate()
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
+              fun someMethod() {
+                val template = RestTemplate()
+                val template2 = org.springframework.data.mongodb.core.MongoTemplate()
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", NoTemplateUseInActionOrDomainService()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()

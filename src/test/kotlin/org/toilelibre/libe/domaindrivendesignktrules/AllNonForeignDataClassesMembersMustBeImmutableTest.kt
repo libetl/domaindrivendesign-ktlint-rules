@@ -13,13 +13,14 @@ class AllNonForeignDataClassesMembersMustBeImmutableTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Entity
-@ForeignModel
-data class Account(var id: ObjectId, var firstName: String, var lastName: String)
+            @Entity
+            @ForeignModel
+            data class Account(var id: ObjectId, var firstName: String, var lastName: String)
 
-        """.trimIndent(), listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).isEmpty()
@@ -31,12 +32,13 @@ data class Account(var id: ObjectId, var firstName: String, var lastName: String
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages
+            package some.packages
 
-@Entity
-data class Account(var id: ObjectId, var firstName: String, var lastName: String)
+            @Entity
+            data class Account(var id: ObjectId, var firstName: String, var lastName: String)
 
-        """.trimIndent(), listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable()))
+            """.trimIndent(),
+            listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable()))
         ) { collector.add(it) }
 
         Assertions.assertThat(collector).containsExactly(

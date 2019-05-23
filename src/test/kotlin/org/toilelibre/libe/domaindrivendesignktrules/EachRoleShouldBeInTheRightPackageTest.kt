@@ -14,15 +14,16 @@ class EachRoleShouldBeInTheRightPackageTest {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.infra
+            package some.packages.infra
 
-@Action
-class MyAction {
+            @Action
+            class MyAction {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -40,15 +41,16 @@ class MyAction {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.infra
+            package some.packages.infra
 
-@DomainService
-class MyDomainService {
+            @DomainService
+            class MyDomainService {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -66,15 +68,16 @@ class MyDomainService {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.action
+            package some.packages.action
 
-@Repository
-class MyRepository {
+            @Repository
+            class MyRepository {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -92,15 +95,16 @@ class MyRepository {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.action
+            package some.packages.action
 
-@Gateway
-class MyGateway {
+            @Gateway
+            class MyGateway {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -118,15 +122,16 @@ class MyGateway {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.action
+            package some.packages.action
 
-@Component
-class MyComponent {
+            @Component
+            class MyComponent {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).containsExactly(
@@ -144,15 +149,16 @@ class MyComponent {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.infra.gateways.myservice
+            package some.packages.infra.gateways.myservice
 
-@Component
-class MyComponent {
+            @Component
+            class MyComponent {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -164,15 +170,16 @@ class MyComponent {
         val collector = mutableListOf<LintError>()
         KtLint.lint(
             """
-package some.packages.actions
+            package some.packages.actions
 
-@Action
-class MyAction {
+            @Action
+            class MyAction {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
@@ -185,12 +192,13 @@ class MyAction {
         KtLint.lint(
             """
 
-class MyClass {
+            class MyClass {
 
-  fun someMethod() {
-  }
-}
-        """.trimIndent(), listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
+              fun someMethod() {
+              }
+            }
+            """.trimIndent(),
+            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
         ) { collector.add(it) }
 
         assertThat(collector).isEmpty()
