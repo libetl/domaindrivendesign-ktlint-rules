@@ -5,17 +5,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
 
-group = "org.toilelibre.libe"
+group = "org.toile-libre.libe"
 version = "1.0.0"
 
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "8.0.0"
-    id("org.jetbrains.kotlin.jvm") version "1.3.31"
+    id("org.jetbrains.kotlin.jvm") version "1.3.40"
     id("com.bmuschko.nexus") version "2.3.1"
+    id("io.codearte.nexus-staging") version "0.21.0"
     `java-library`
     jacoco
     application
     idea
+    maven
     `maven-publish`
     signing
 }
@@ -40,6 +42,7 @@ allprojects {
         plugin("jacoco")
         plugin("org.jlleitschuh.gradle.ktlint")
         plugin("com.bmuschko.nexus")
+        plugin("io.codearte.nexus-staging")
     }
 
     kotlin {
@@ -79,6 +82,11 @@ allprojects {
         // you can create a ktlint run config with that
         compileOnly("com.pinterest:ktlint:0.32.0")
         compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20181211")
+    }
+    
+    nexusStaging {
+        packageGroup = "org.toile-libre.libe"
+        stagingProfileId = "3ebf87dd30af1"
     }
 }
 
@@ -135,8 +143,6 @@ compileTestKotlin.kotlinOptions {
 
 nexus {
     sign = true
-    repositoryUrl = "https://oss.sonatype.org/nexus/content/repositories/internal/"
-    snapshotRepositoryUrl = "https://oss.sonatype.org/nexus/content/repositories/internal-snapshots/"
 }
 
 val sources by tasks.registering(Jar::class) {
@@ -146,41 +152,37 @@ val sources by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-            artifact(sources.get())
-            groupId = project.group.toString()
-            artifactId = project.path.removePrefix(":")
-                .replace(":", "-").toLowerCase()
-            version = project.version.toString()
-            pom {
-                name.set("domaindrivendesign-ktlint-rules")
-                description.set("Domain Driven Design ktlint rules")
-                url.set("https://github.com/libetl/domaindrivendesign-ktlint-rules")
+val modifyPom : Closure<MavenPom> by ext
 
-                scm {
-                    url.set("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
-                    connection.set("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
-                    developerConnection.set("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
-                }
+modifyPom(closureOf<MavenPom> {
+    project {
+        withGroovyBuilder {
+            "name"("domaindrivendesign-ktlint-rules")
+            "description"("Domain Driven Design ktlint rules")
+            "url"("https://github.com/libetl/domaindrivendesign-ktlint-rules")
+            "inceptionYear"("2019")
 
-                licenses {
-                    license {
-                        name.set("The Apache Software License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        distribution.set("repo")
-                    }
-                }
+            "scm" {
+                "connection"("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
+                "developerConnection"("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
+                "url"("scm:git@github.com:libetl/domaindrivendesign-ktlint-rules.git")
+            }
 
-                developers {
-                    developer {
-                        id.set("libetl")
-                        name.set("LiBe")
-                    }
+            "licenses" {
+                "license" {
+                    "name"("The Apache Software License, Version 2.0")
+                    "url"("http://www.apache.org/licenses/LICENSE-2.0.txt")
                 }
             }
+
+            "developers" {
+                "developer" {
+                    "id"("libetl")
+                    "name"("LiBe")
+                    "url"("https://github.com/libetl")
+                }
+            }
+
         }
     }
-}
+})
