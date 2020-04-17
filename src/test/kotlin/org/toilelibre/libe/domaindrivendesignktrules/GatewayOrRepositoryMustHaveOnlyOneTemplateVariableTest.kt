@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
 
@@ -13,23 +13,25 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.RestTemplate
 
-            @Gateway
-            class MyGateway {
+@Gateway
+class MyGateway {
 
-              private val restTemplate1: RestTemplate
-              private val restTemplate2: RestTemplate
+  private val restTemplate1: RestTemplate
+  private val restTemplate2: RestTemplate
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 5,
                 col = 1,
@@ -44,24 +46,26 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            import org.springframework.web.client.RestTemplate
-            import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
 
-            @Gateway
-            class MyGateway {
+@Gateway
+class MyGateway {
 
-              private val restTemplate: RestTemplate
-              private val mongoTemplate: MongoTemplate
+  private val restTemplate: RestTemplate
+  private val mongoTemplate: MongoTemplate
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 6,
                 col = 1,
@@ -76,24 +80,26 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            import org.springframework.web.client.RestTemplate
-            import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
 
-            @Repository
-            class MyRepository {
+@Repository
+class MyRepository {
 
-              private val restTemplate: RestTemplate
-              private val mongoTemplate: MongoTemplate
+  private val restTemplate: RestTemplate
+  private val mongoTemplate: MongoTemplate
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 6,
                 col = 1,
@@ -108,23 +114,25 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            import org.springframework.web.client.RestTemplate
-            import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
 
-            @Repository
-            class MyRepository {
+@Repository
+class MyRepository {
 
-              private val mongoTemplate: MongoTemplate
+  private val mongoTemplate: MongoTemplate
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 
     @Test
@@ -132,22 +140,24 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            import org.springframework.web.client.RestTemplate
-            import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
 
-            @Repository
-            class MyRepository {
+@Repository
+class MyRepository {
 
-              private val mongoTemplate: MongoTemplate
+  private val mongoTemplate: MongoTemplate
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", GatewayOrRepositoryMustHaveOnlyOneTemplateVariable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 }

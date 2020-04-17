@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class EachRoleShouldBeInTheRightPackageTest {
 
@@ -13,20 +13,22 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.infra
+package some.packages.infra
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3, col = 1,
                 ruleId = "test:each-role-should-be-in-the-right-package",
@@ -40,24 +42,26 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.infra
+package some.packages.infra
 
-            @DomainService
-            class MyDomainService {
+@DomainService
+class MyDomainService {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3, col = 1,
                 ruleId = "test:each-role-should-be-in-the-right-package",
-                detail = "While checking the package structure for the class some.packages.infra.MyDomainService, it has been discovered that it should be located in the domain package"
+                detail = "While checking the package structure for the class some.packages.infra.MyDomainService, it has been discovered that it should be located under the domain package"
             )
         )
     }
@@ -67,24 +71,26 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.action
+package some.packages.action
 
-            @Repository
-            class MyRepository {
+@Repository
+class MyRepository {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3, col = 1,
                 ruleId = "test:each-role-should-be-in-the-right-package",
-                detail = "While checking the package structure for the class some.packages.action.MyRepository, it has been discovered that it should be located in the infra.databases package"
+                detail = "While checking the package structure for the class some.packages.action.MyRepository, it has been discovered that it should be located under the infra.databases package"
             )
         )
     }
@@ -94,24 +100,26 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.action
+package some.packages.action
 
-            @Gateway
-            class MyGateway {
+@Gateway
+class MyGateway {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3, col = 1,
                 ruleId = "test:each-role-should-be-in-the-right-package",
-                detail = "While checking the package structure for the class some.packages.action.MyGateway, it has been discovered that it should be located in the infra.gateways package"
+                detail = "While checking the package structure for the class some.packages.action.MyGateway, it has been discovered that it should be located under the infra.gateways package"
             )
         )
     }
@@ -121,20 +129,22 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.action
+package some.packages.action
 
-            @Component
-            class MyComponent {
+@Component
+class MyComponent {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3, col = 1,
                 ruleId = "test:each-role-should-be-in-the-right-package",
@@ -148,20 +158,22 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.infra.gateways.myservice
+package some.packages.infra.gateways.myservice
 
-            @Component
-            class MyComponent {
+@Component
+class MyComponent {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 
     @Test
@@ -169,20 +181,22 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages.actions
+package some.packages.actions
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 
     @Test
@@ -190,17 +204,19 @@ class EachRoleShouldBeInTheRightPackageTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
 
-            class MyClass {
+class MyClass {
 
-              fun someMethod() {
-              }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage()))
-        ) { collector.add(it) }
+  fun someMethod() {
+  }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", EachRoleShouldBeInTheRightPackage())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 }

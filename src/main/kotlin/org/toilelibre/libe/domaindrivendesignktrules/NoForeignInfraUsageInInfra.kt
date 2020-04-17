@@ -1,11 +1,11 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.Rule
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
+import com.pinterest.ktlint.core.Rule
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClass
 
 class NoForeignInfraUsageInInfra : Rule("no-foreign-infra-usage-in-infra") {
 
@@ -31,7 +31,10 @@ class NoForeignInfraUsageInInfra : Rule("no-foreign-infra-usage-in-infra") {
 
         if (classInformation.annotationNames.contains("Configuration")) return
 
-        val wrongImports = imports.filter { import -> import.contains(".infra.") && !import.startsWith(packageName) }
+        val wrongImports = imports.filter { import ->
+            import.contains(".infra.") &&
+            !(import.contains(".infra.tools")) &&
+            !import.startsWith(packageName) }
 
         if (wrongImports.isNotEmpty())
             emit.problemWith(node.startOffset, className, wrongImports)

@@ -8,6 +8,7 @@ import java.net.URI
 group = "org.toile-libre.libe"
 version = "1.0.0"
 
+rootProject.extra["junit-jupiter.version"] = "5.6.2"
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "8.0.0"
     id("org.jetbrains.kotlin.jvm") version "1.3.40"
@@ -65,10 +66,14 @@ allprojects {
         compileOnly("com.pinterest:ktlint:0.32.0")
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         compileOnly("org.jetbrains.kotlin:kotlin-reflect")
-        testImplementation("junit:junit:4.12")
-        testImplementation("org.assertj:assertj-core:3.10.0")
-        testImplementation("com.pinterest.ktlint:ktlint-test:0.32.0")
-        testImplementation("com.pinterest.ktlint:ktlint-core:0.32.0")
+        testRuntimeOnly("org.junit.platform:junit-platform-commons:1.6.2")
+        testRuntimeOnly("org.junit.platform:junit-platform-engine:1.6.2")
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+        testImplementation("com.winterbe:expekt:0.5.0")
+        testImplementation("com.pinterest.ktlint:ktlint-test:0.35.0")
+        testImplementation("com.pinterest.ktlint:ktlint-core:0.35.0")
         testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         testImplementation("org.jetbrains.kotlin:kotlin-reflect")
     }
@@ -80,7 +85,7 @@ allprojects {
 
     dependencies {
         // you can create a ktlint run config with that
-        compileOnly("com.pinterest:ktlint:0.32.0")
+        compileOnly("com.pinterest:ktlint:0.35.0")
         compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20181211")
     }
     

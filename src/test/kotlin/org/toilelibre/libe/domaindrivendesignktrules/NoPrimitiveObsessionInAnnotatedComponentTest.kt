@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class NoPrimitiveObsessionInAnnotatedComponentTest {
 
@@ -13,21 +13,23 @@ class NoPrimitiveObsessionInAnnotatedComponentTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someAssertion(b: Boolean) {
-              }
+  fun someAssertion(b: Boolean) {
+  }
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 
     @Test
@@ -35,21 +37,23 @@ class NoPrimitiveObsessionInAnnotatedComponentTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someMethod(i: Int, b: Boolean) {
-              }
+  fun someMethod(i: Int, b: Boolean) {
+  }
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 6,
                 col = 3,
@@ -64,21 +68,23 @@ class NoPrimitiveObsessionInAnnotatedComponentTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someMethod(paymentMean: PaymentMean, b: Boolean) {
-              }
+  fun someMethod(paymentMean: PaymentMean, b: Boolean) {
+  }
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 6,
                 col = 3,
@@ -93,21 +99,23 @@ class NoPrimitiveObsessionInAnnotatedComponentTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someMethod(paymentMean: PaymentMean, b: Boolean?) {
-              }
+  fun someMethod(paymentMean: PaymentMean, b: Boolean?) {
+  }
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 6,
                 col = 3,
@@ -122,20 +130,22 @@ class NoPrimitiveObsessionInAnnotatedComponentTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Action
-            class MyAction {
+@Action
+class MyAction {
 
-              fun someMethod(paymentMean: PaymentMean, billingInfo: BillingInfo) {
-              }
+  fun someMethod(paymentMean: PaymentMean, billingInfo: BillingInfo) {
+  }
 
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent()))
-        ) { collector.add(it) }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoPrimitiveObsessionInAnnotatedComponent())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 }

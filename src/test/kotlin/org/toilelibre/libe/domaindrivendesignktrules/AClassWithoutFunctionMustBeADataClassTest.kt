@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class AClassWithoutFunctionMustBeADataClassTest {
 
@@ -13,20 +13,17 @@ class AClassWithoutFunctionMustBeADataClassTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
-            """
-            package some.packages
+            KtLint.Params(text = """
+package some.packages
+class MyClass {
+  private var myFieldOne: Int
+  private var myFieldTwo: String
+  private var myFieldThree: Boolean
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass())),
+            cb = { e, _ -> collector.add(e) }))
 
-            class MyClass {
-              private var myFieldOne: Int
-              private var myFieldTwo: String
-              private var myFieldThree: Boolean
-            }
-
-            """.trimIndent(),
-            listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass()))
-        ) { collector.add(it) }
-
-        Assertions.assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3,
                 col = 1,
@@ -41,20 +38,17 @@ class AClassWithoutFunctionMustBeADataClassTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
-            """
-            package some.packages
+            KtLint.Params(text = """
+package some.packages
+class MyClass : Object {
+  private var myFieldOne: Int
+  private var myFieldTwo: String
+  private var myFieldThree: Boolean
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass())),
+                cb = { e, _ -> collector.add(e) }))
 
-            class MyClass : Object {
-              private var myFieldOne: Int
-              private var myFieldTwo: String
-              private var myFieldThree: Boolean
-            }
-
-            """.trimIndent(),
-            listOf(RuleSet("test", AClassWithoutFunctionMustBeADataClass()))
-        ) { collector.add(it) }
-
-        Assertions.assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 3,
                 col = 1,

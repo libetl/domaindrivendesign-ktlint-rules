@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class NoGenericCatchTest {
 
@@ -13,21 +13,23 @@ class NoGenericCatchTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
 
-            fun someMethod() {
-             try {
-               println("Hello World")
-             } catch (e: Exception){
-             }
-            }
-            """.trimIndent(),
-            listOf(RuleSet("test", NoGenericCatch()))
-        ) { collector.add(it) }
+fun someMethod() {
+ try {
+   println("Hello World")
+ } catch (e: Exception){
+ }
+}
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoGenericCatch())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 7,
                 col = 4,

@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class AllNonForeignDataClassesMembersMustBeImmutableTest {
     @Test
@@ -12,18 +12,20 @@ class AllNonForeignDataClassesMembersMustBeImmutableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Entity
-            @ForeignModel
-            data class Account(var id: ObjectId, var firstName: String, var lastName: String)
+@Entity
+@ForeignModel
+data class Account(var id: ObjectId, var firstName: String, var lastName: String)
 
-            """.trimIndent(),
-            listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable()))
-        ) { collector.add(it) }
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        Assertions.assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 
     @Test
@@ -31,17 +33,19 @@ class AllNonForeignDataClassesMembersMustBeImmutableTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Entity
-            data class Account(var id: ObjectId, var firstName: String, var lastName: String)
+@Entity
+data class Account(var id: ObjectId, var firstName: String, var lastName: String)
 
-            """.trimIndent(),
-            listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable()))
-        ) { collector.add(it) }
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", AllNonForeignDataClassesMembersMustBeImmutable())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        Assertions.assertThat(collector).containsExactly(
+        collector.should.contain.all.the.elements(
             LintError(
                 line = 4, col = 20,
                 ruleId = "test:no-non-foreign-data-class-member-mutable",

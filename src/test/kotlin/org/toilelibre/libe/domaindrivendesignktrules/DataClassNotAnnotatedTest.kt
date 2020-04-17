@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class DataClassNotAnnotatedTest {
 
@@ -13,24 +13,26 @@ class DataClassNotAnnotatedTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @ForeignModel
-            data class A(val i: Int)
+@ForeignModel
+data class A(val i: Int)
 
-            data class B(val j: Int)
+data class B(val j: Int)
 
-            @ForeignModel
-            data class C(val k: Int)
+@ForeignModel
+data class C(val k: Int)
 
-            data class D(val l: Int)
+data class D(val l: Int)
 
-            """.trimIndent(),
-            listOf(RuleSet("test", DataClassNotAnnotated()))
-        ) { collector.add(it) }
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", DataClassNotAnnotated())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).containsExactly(
+        collector.should.contain.all.the.elements(
             LintError(
                 line = 6,
                 col = 1,
@@ -51,21 +53,23 @@ class DataClassNotAnnotatedTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @ForeignModel
-            data class A(val i: Int)
+@ForeignModel
+data class A(val i: Int)
 
-            @ValueType
-            data class B(val j: Int)
+@ValueType
+data class B(val j: Int)
 
-            @ForeignModel
-            data class C(val k: Int)
-            """.trimIndent(),
-            listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract()))
-        ) { collector.add(it) }
+@ForeignModel
+data class C(val k: Int)
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoForeignModelInAnnotatedComponentContract())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        assertThat(collector).isEmpty()
+        collector.should.be.empty
     }
 }

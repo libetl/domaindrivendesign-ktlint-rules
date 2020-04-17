@@ -3,8 +3,8 @@ package org.toilelibre.libe.domaindrivendesignktrules
 import com.pinterest.ktlint.core.KtLint
 import com.pinterest.ktlint.core.LintError
 import com.pinterest.ktlint.core.RuleSet
-import org.assertj.core.api.Assertions
-import org.junit.Test
+import com.winterbe.expekt.should
+import org.junit.jupiter.api.Test
 
 class NeedsOneCallToAnActionFromAControllerTest {
     @Test
@@ -12,27 +12,29 @@ class NeedsOneCallToAnActionFromAControllerTest {
 
         val collector = mutableListOf<LintError>()
         KtLint.lint(
+            KtLint.Params(
+                text =
             """
-            package some.packages
+package some.packages
 
-            @Action
-            class TheAction {
-              fun doIt(){
-              }
-            }
+@Action
+class TheAction {
+  fun doIt(){
+  }
+}
 
-            @Controller
-            class TheController {
-              fun someMethod() {
-                println("Hello world")
-              }
-            }
+@Controller
+class TheController {
+  fun someMethod() {
+    println("Hello world")
+  }
+}
 
-            """.trimIndent(),
-            listOf(RuleSet("test", NeedsOneCallToAnActionFromAController()))
-        ) { collector.add(it) }
+        """.trimIndent(), ruleSets = listOf(RuleSet("test", NeedsOneCallToAnActionFromAController())),
+                cb = { e, _ -> collector.add(e) })
+        )
 
-        Assertions.assertThat(collector).containsExactly(
+        collector.should.contain(
             LintError(
                 line = 11, col = 3,
                 ruleId = "test:needs-one-call-to-an-action-from-a-controller",

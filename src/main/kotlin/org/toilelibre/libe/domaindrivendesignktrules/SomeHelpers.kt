@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.psi.KtModifierListOwner
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtNullableType
 import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTypeElement
 import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.psi.KtUserType
@@ -22,9 +23,8 @@ object SomeHelpers {
     private fun determineType(type: KtTypeElement?): String? =
         when (type) {
             is KtUserType -> type.referenceExpression?.getReferencedName()!!
-            is KtNullableType ->
-                if (type == type.innerType)
-                    null else determineType(type.innerType as KtTypeElement)
+            is KtNullableType -> if (type == type.innerType)
+                null else determineType(type.innerType as KtTypeElement)
             is KtFunctionType -> type.text
             else -> null
         }
@@ -48,13 +48,14 @@ object SomeHelpers {
     val KtClassOrObject.methods
         get() = this.body?.declarations?.filter { it is KtNamedFunction }.orEmpty() as List<KtNamedFunction>
 
+    val KtClassOrObject.members
+        get() = this.body?.declarations?.filter { it is KtProperty }.orEmpty() as List<KtProperty>
+
     val KtNamedFunction.parameters get() = this.valueParameterList?.parameters
     val KtNamedFunction.returnType get() = (this.colon as ASTNode?)?.nextCodeSibling()?.psi as KtTypeReference?
     val KtNamedFunction.parameterTypes
-        get() = (
-            (this.parameters?.map { it.typeReference } ?: listOf<KtTypeReference>()) +
-                this.returnType
-            ).filterNotNull()
+        get() = ((this.parameters?.map { it.typeReference } ?: listOf<KtTypeReference>()) +
+            this.returnType).filterNotNull()
     val KtParameter.typeName get() = this.typeReference?.typeName
     val KtTypeReference.typeName get() = determineType(this.typeElement)
 
