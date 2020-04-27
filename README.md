@@ -16,7 +16,7 @@ object DomainDrivenDesignAnnotations {
      * The following role is the intention revealing code of the API.
      * It must be written in declarative design and cannot be a facade to the code.
      * The abstraction level must be respected in order to let the action
-     * describe the end to end.
+     * describe the interaction end to end.
      *
      * The action can only have a constructor and a public method, 0 private method
      */
@@ -30,7 +30,7 @@ object DomainDrivenDesignAnnotations {
      * running the risk of becoming too difficult to read.
      *
      * The domain service can have several public methods, however we strongly
-     * recommend that all those methods are semantically relating to the same
+     * recommend to make all those methods semantically related to the same
      * use case
      */
     @Service
