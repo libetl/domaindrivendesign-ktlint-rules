@@ -60,7 +60,7 @@ object DomainDrivenDesignAnnotations {
 
     /**
      * Indicates that the following role can welcome incoming requests
-     * from a consumer. The Endpoint can have different shapes :
+     * from a consuming actor. The Endpoint can have different shapes :
      * - a message consumer
      * - an api controller,
      * - a graphql query / mutation
