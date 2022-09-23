@@ -1,17 +1,15 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.lexer.KtTokens
 
 class NoBreakOrContinue : Rule("no-break-or-continue") {
 
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitFunction
     ) {
-
         if (node.elementType.index == KtTokens.BREAK_KEYWORD.index ||
             node.elementType.index == KtTokens.CONTINUE_KEYWORD.index
         ) {

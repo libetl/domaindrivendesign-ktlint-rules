@@ -1,13 +1,12 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
-import com.pinterest.ktlint.core.Rule
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 
 class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right-package") {
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitFunction
@@ -22,29 +21,32 @@ class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right
         val packageName = classInformation.containingKtFile.packageFqName.asString()
         val annotationNames = classInformation.annotationNames
 
-        if (annotationNames.contains("Component") && !packageName.contains(".infra."))
+        if (annotationNames.contains("Component") && !packageName.contains(".infra.")) {
             emit.problemWith(
-                node.startOffset, className,
+                node.startOffset,
+                className,
                 "not be annotated with Component (or should be moved to the infra package)"
             )
-        else if (annotationNames.contains("Action") && !packageName.endsWith(".actions"))
+        } else if (annotationNames.contains("Action") && !packageName.endsWith(".actions")) {
             emit.problemWith(node.startOffset, className, "be located in the actions package")
-        else if (annotationNames.contains("DomainService") && !packageName.contains(".domain."))
+        } else if (annotationNames.contains("DomainService") && !packageName.contains(".domain.")) {
             emit.problemWith(node.startOffset, className, "be located under the domain package")
-        else if (annotationNames.contains("Gateway") && !packageName.contains(".infra.gateways."))
+        } else if (annotationNames.contains("Gateway") && !packageName.contains(".infra.gateways.")) {
             emit.problemWith(node.startOffset, className, "be located under the infra.gateways package")
-        else if (annotationNames.contains("Repository") && !packageName.contains(".infra.databases."))
+        } else if (annotationNames.contains("Repository") && !packageName.contains(".infra.databases.")) {
             emit.problemWith(node.startOffset, className, "be located under the infra.databases package")
-        else if (annotationNames.contains("ForeignModel") && !packageName.contains(".infra."))
+        } else if (annotationNames.contains("ForeignModel") && !packageName.contains(".infra.")) {
             emit.problemWith(node.startOffset, className, "be located under the infra package")
-        else if (!annotationNames.contains("ForeignModel") &&
+        } else if (!annotationNames.contains("ForeignModel") &&
             packageName.contains(".infra.") &&
             (classInformation.isData() || classInformation.isEnum())
-        )
+        ) {
             emit.problemWith(
-                node.startOffset, className,
+                node.startOffset,
+                className,
                 "be annotated with @ForeignModel (or moved under the domain package)"
             )
+        }
     }
 
     private fun EmitFunction.problemWith(

@@ -1,14 +1,17 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtPackageDirective
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
+import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.parameterTypes
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
-import com.pinterest.ktlint.core.Rule
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtClass
 
 class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-annotated-component-contract") {
 
@@ -23,7 +26,7 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
     }
 
     @Synchronized
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitFunction
@@ -33,6 +36,9 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
         val classInformation = node.psi as KtClass
 
         val currentFileImports = classInformation.imports
+        val owningPackage = classInformation.getNonStrictParentOfType(KtFile::class.java)
+            ?.getChildOfType<KtPackageDirective>()
+            ?.fqName
 
         if (classInformation.annotationNames.contains("ForeignModel")) {
             val violations: Map<String?, List<String?>> = mapOf(
@@ -48,11 +54,15 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
 
         if (classInformation.annotationNames.intersect(
                 listOf(
-                    "Action", "DomainService", "Gateway", "Repository"
-                )
+                        "Action",
+                        "DomainService",
+                        "Gateway",
+                        "Repository"
+                    )
             ).isEmpty()
-        )
+        ) {
             return
+        }
 
         val methods = classInformation.methods
 
@@ -65,11 +75,13 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
 
         methods.forEach { method ->
             method.parameterTypes.forEach { parameter ->
-                val fullyQualifiedName = currentFileImports[parameter.typeName]
-                if (fullyQualifiedName != null)
-                    listOfMethodParameterTypes[fullyQualifiedName] =
-                        ((listOfMethodParameterTypes[fullyQualifiedName] ?: listOf()) +
-                            ("${classInformation.fqName}.${method.name}"))
+                val fullyQualifiedName =
+                    currentFileImports[parameter.typeName] ?: "$owningPackage.${parameter.typeName}"
+                listOfMethodParameterTypes[fullyQualifiedName] =
+                    (
+                        (listOfMethodParameterTypes[fullyQualifiedName] ?: listOf()) +
+                            ("${classInformation.fqName}.${method.name}")
+                        )
             }
         }
 
@@ -79,11 +91,12 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
     private fun EmitFunction.problemWith(startOffset: Int, violations: Map<String?, List<String?>>) =
         if (violations.isNotEmpty() &&
             violations.values.any { it.isNotEmpty() }
-        )
+        ) {
             this(
                 startOffset,
                 "Foreign models have been found in some Action or DomainService or Gateway or Repository" +
                     " contract : $violations",
                 false
-            ) else Unit
+            )
+        } else Unit
 }

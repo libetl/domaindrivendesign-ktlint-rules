@@ -4,7 +4,8 @@ import com.pinterest.ktlint.core.RuleSet
 import com.pinterest.ktlint.core.RuleSetProvider
 
 class DomainDrivenDesignRuleSetProvider : RuleSetProvider {
-    override fun get() = RuleSet("domain-driven-design-ktlint-rules",
+    override fun get() = RuleSet(
+        "domain-driven-design-ktlint-rules",
         NoForeignModelInAnnotatedComponentContract(),
         DataClassNotAnnotated(),
         NoForeignInfraUsageInInfra(),
@@ -22,5 +23,8 @@ class DomainDrivenDesignRuleSetProvider : RuleSetProvider {
         NeedsOneCallToAnActionFromAController(),
         EachRoleShouldBeInTheRightPackage(),
         ADataClassCannotUseAMap(),
-        AnActionCannotUseAnotherAction())
+        AnActionCannotUseAnotherAction(),
+        ADataClassCannotUseAComponent(),
+        FunctionShouldBeOwnedByValueType()
+    )
 }

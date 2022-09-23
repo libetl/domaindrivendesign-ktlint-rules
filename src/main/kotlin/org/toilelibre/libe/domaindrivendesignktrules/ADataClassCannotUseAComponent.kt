@@ -1,6 +1,5 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.ast.isPartOf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtParameter
@@ -8,7 +7,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
-class ADataClassCannotUseAMap : Rule("data-class-cannot-use-a-map") {
+class ADataClassCannotUseAComponent : Rule("data-class-cannot-use-a-component") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
@@ -16,12 +15,6 @@ class ADataClassCannotUseAMap : Rule("data-class-cannot-use-a-map") {
         emit: EmitFunction
     ) {
         if (node.elementType != KtStubElementTypes.VALUE_PARAMETER) {
-            return
-        }
-
-        if (!node.isPartOf(KtStubElementTypes.PRIMARY_CONSTRUCTOR) &&
-            !node.isPartOf(KtStubElementTypes.SECONDARY_CONSTRUCTOR)
-        ) {
             return
         }
 
@@ -33,20 +26,23 @@ class ADataClassCannotUseAMap : Rule("data-class-cannot-use-a-map") {
 
         val isDataClass = owningClass?.isData() ?: false || owningClass?.isEnum() ?: false
 
-        if (!isDataClass || !parameter.hasValOrVar()) return
+        if (!isDataClass) return
 
-        if (parameter.typeReference?.text?.startsWith("Map") == true ||
-            parameter.typeReference?.text?.startsWith("java.lang.Map") == true
+        if (parameter.modifierList?.annotationEntries?.mapNotNull { it.shortName?.asString() }
+            ?.any { listOf("Inject", "Autowired").contains(it) } == true
         ) {
-            emit.problemWith(node.startOffset, parameter.fqName?.asString() ?: "(not found)")
+            emit.problemWith(
+                node.startOffset,
+                parameter.fqName?.asString() ?: parameter.name ?: "(not found)"
+            )
         }
     }
 
     private fun EmitFunction.problemWith(startOffset: Int, name: String) =
         this(
             startOffset,
-            "This variable : $name is a map (we cannot accept map as data class members because marshalling / " +
-                "unmarshalling has a lot of concerns)",
+            "This variable : $name is a spring component. Components cannot be used in data classes.\n" +
+                "If you need them for data injection (using jackson / graphQL), you need to fork the data class as a serialization bean",
             false
         )
 }

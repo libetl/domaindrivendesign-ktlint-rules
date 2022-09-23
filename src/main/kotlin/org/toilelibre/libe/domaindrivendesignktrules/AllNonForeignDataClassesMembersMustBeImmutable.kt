@@ -1,7 +1,5 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.isPartOf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
@@ -9,21 +7,24 @@ import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 
 class AllNonForeignDataClassesMembersMustBeImmutable : Rule("no-non-foreign-data-class-member-mutable") {
 
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitFunction
     ) {
-        if (node.elementType != KtStubElementTypes.VALUE_PARAMETER)
+        if (node.elementType != KtStubElementTypes.VALUE_PARAMETER) {
             return
+        }
 
         if (!node.isPartOf(KtStubElementTypes.PRIMARY_CONSTRUCTOR) &&
             !node.isPartOf(KtStubElementTypes.SECONDARY_CONSTRUCTOR)
-        )
+        ) {
             return
+        }
 
         val parameter = node.psi as KtParameter
 

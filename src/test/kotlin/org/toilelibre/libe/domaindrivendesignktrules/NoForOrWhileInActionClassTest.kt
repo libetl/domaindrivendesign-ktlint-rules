@@ -1,8 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.RuleSet
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
 
@@ -10,12 +8,11 @@ class NoForOrWhileInActionClassTest {
 
     @Test
     fun testViolation() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 @Action
@@ -27,13 +24,17 @@ class MyAction {
     }
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoForOrWhileInActionClass())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoForOrWhileInActionClass() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.contain(
             LintError(
-                line = 7, col = 5, ruleId = "test:no-for-or-while-in-action-class",
+                line = 7,
+                col = 5,
+                ruleId = "no-for-or-while-in-action-class",
                 detail =
                 """Action contains a `for(. in .)`, this is discouraged.
 The business logic must be written in declarative programming.
@@ -46,12 +47,11 @@ you can consider implementing some idiomatics :
 
     @Test
     fun testNestedWhile() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 @Action
@@ -68,13 +68,17 @@ class MyAction {
     }
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoForOrWhileInActionClass())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoForOrWhileInActionClass() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.contain(
             LintError(
-                line = 10, col = 7, ruleId = "test:no-for-or-while-in-action-class",
+                line = 10,
+                col = 7,
+                ruleId = "no-for-or-while-in-action-class",
                 detail =
                 """Action contains a `while(...){...}`, this is discouraged.
 The business logic must be written in declarative programming.
@@ -87,12 +91,11 @@ you can consider implementing some idiomatics :
 
     @Test
     fun testNoViolation() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 data class Traveler(val id: Int)
@@ -106,8 +109,11 @@ class MyAction {
   fun someMethod(theTravelers : List<Traveler>) {
     theTravelers.tookApart { println ("Hello " + it) }
   }
-}""".trimIndent(), ruleSets = listOf(RuleSet("test", NoForOrWhileInActionClass())),
-                cb = { e, _ -> collector.add(e) })
+}
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoForOrWhileInActionClass() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.be.empty

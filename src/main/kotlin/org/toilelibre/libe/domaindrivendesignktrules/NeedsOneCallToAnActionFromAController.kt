@@ -1,11 +1,5 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.allThe
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAMethod
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
-import com.pinterest.ktlint.core.Rule
 import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
@@ -15,15 +9,19 @@ import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.psiUtil.getValueParameters
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.allThe
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAMethod
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 
 class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-from-a-controller") {
 
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
     ) {
-
         if (node.isNotAMethod()) return
         val method = node.psi as KtFunction
 
@@ -42,8 +40,9 @@ class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-
         if (classInformation.annotationNames.intersect(
                 listOf("Controller", "RestController", "Endpoint")
             ).isEmpty() && !isListener
-        )
+        ) {
             return
+        }
 
         val imports = classInformation.imports
         val actionMembers = classInformation.getValueParameters()
@@ -51,14 +50,16 @@ class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-
             .filter { (imports[it.second] ?: it.second).contains(".actions.") }
             .toMap()
 
-        val allTheReferenceExpressions = (method.bodyBlockExpression?.statements
-            ?: if (method is KtNamedFunction) listOf(method.initializer) else listOf())
+        val allTheReferenceExpressions = (
+            method.bodyBlockExpression?.statements
+                ?: if (method is KtNamedFunction) listOf(method.initializer) else listOf()
+            )
             .allThe<KtReferenceExpression>()
 
         val result =
             allTheReferenceExpressions.any { expression ->
                 actionMembers.any { (key) ->
-                        key == expression.text
+                    key == expression.text
                 }
             }
 

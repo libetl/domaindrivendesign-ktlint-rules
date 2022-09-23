@@ -1,11 +1,10 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.members
-import com.pinterest.ktlint.core.Rule
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtClass
 
 class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action") {
 
@@ -17,7 +16,7 @@ class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action
         }
     }
 
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitFunction
@@ -31,11 +30,11 @@ class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action
         listOfActions.add(classInformation.name!!)
 
         val violations = classInformation.members.filter {
-            it.isMember && listOfActions.contains(it.typeReference?.text)
+            listOfActions.contains(it.first)
         }
 
         violations.forEach {
-            emit.problemWith(node.startOffset, classInformation.name!!, it.typeReference!!.text)
+            emit.problemWith(node.startOffset, classInformation.name!!, it.first!!)
         }
     }
 

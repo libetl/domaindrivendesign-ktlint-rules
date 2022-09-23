@@ -1,8 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.RuleSet
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
 
@@ -10,12 +8,11 @@ class NoTemplateUseInActionOrDomainServiceTest {
 
     @Test
     fun testViolation() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 import org.springframework.web.client.RestTemplate
@@ -28,14 +25,17 @@ class MyAction {
     val template2 = org.springframework.data.mongodb.core.MongoTemplate()
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoTemplateUseInActionOrDomainService())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoTemplateUseInActionOrDomainService() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.contain(
             LintError(
-                line = 5, col = 1,
-                ruleId = "test:no-template-use-in-action-or-domain-service",
+                line = 5,
+                col = 1,
+                ruleId = "no-template-use-in-action-or-domain-service",
                 detail = "This|These forbidden package(s) is|are used in an Action or in a DomainService : [org.springframework.web.client, org.springframework.data.mongodb.core]"
             )
         )
@@ -43,12 +43,11 @@ class MyAction {
 
     @Test
     fun testViolationInDomainService() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 import org.springframework.web.client.RestTemplate
@@ -61,14 +60,17 @@ class MyDomainService {
     val template2 = org.springframework.data.mongodb.core.MongoTemplate()
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoTemplateUseInActionOrDomainService())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoTemplateUseInActionOrDomainService() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.contain(
             LintError(
-                line = 5, col = 1,
-                ruleId = "test:no-template-use-in-action-or-domain-service",
+                line = 5,
+                col = 1,
+                ruleId = "no-template-use-in-action-or-domain-service",
                 detail = "This|These forbidden package(s) is|are used in an Action or in a DomainService : [org.springframework.web.client, org.springframework.data.mongodb.core]"
             )
         )
@@ -76,12 +78,11 @@ class MyDomainService {
 
     @Test
     fun testNoViolation() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 @DomainService
@@ -93,8 +94,10 @@ class MyAction {
     val userProfile = userProfileReader.read(id)
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoTemplateUseInActionOrDomainService())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoTemplateUseInActionOrDomainService() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.be.empty
@@ -102,12 +105,11 @@ class MyAction {
 
     @Test
     fun testNoViolationInGateway() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 import org.springframework.web.client.RestTemplate
@@ -120,8 +122,10 @@ class MyGateway {
     val template2 = org.springframework.data.mongodb.core.MongoTemplate()
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoTemplateUseInActionOrDomainService())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoTemplateUseInActionOrDomainService() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.be.empty

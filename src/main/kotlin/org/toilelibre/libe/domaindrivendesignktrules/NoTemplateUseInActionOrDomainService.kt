@@ -1,17 +1,16 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
+import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.allKindsOfTemplatesPackages
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.allThe
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
-import com.pinterest.ktlint.core.Rule
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 
 class NoTemplateUseInActionOrDomainService : Rule("no-template-use-in-action-or-domain-service") {
 
-    override fun visit(
+    override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
         emit: EmitFunction
@@ -34,10 +33,11 @@ class NoTemplateUseInActionOrDomainService : Rule("no-template-use-in-action-or-
     }
 
     private fun EmitFunction.problemWith(startOffset: Int, violations: Collection<String>) =
-        if (violations.isNotEmpty())
+        if (violations.isNotEmpty()) {
             this(
                 startOffset,
                 "This|These forbidden package(s) is|are used in an Action or in a DomainService : $violations",
                 false
-            ) else Unit
+            )
+        } else Unit
 }

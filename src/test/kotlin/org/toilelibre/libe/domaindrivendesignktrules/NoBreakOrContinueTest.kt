@@ -1,8 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import com.pinterest.ktlint.core.KtLint
-import com.pinterest.ktlint.core.LintError
-import com.pinterest.ktlint.core.RuleSet
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
 
@@ -10,12 +8,11 @@ class NoBreakOrContinueTest {
 
     @Test
     fun testViolation() {
-
-        val collector = mutableListOf<LintError>()
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
-            KtLint.Params(
+            KtLint.ExperimentalParams(
                 text =
-            """
+                """
 package some.packages
 
 fun someMethod() {
@@ -26,19 +23,23 @@ fun someMethod() {
     if (i == 4) break
   }
 }
-        """.trimIndent(), ruleSets = listOf(RuleSet("test", NoBreakOrContinue())),
-                cb = { e, _ -> collector.add(e) })
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { NoBreakOrContinue() }),
+                cb = { e, _ -> collector.add(e) }
+            )
         )
 
         collector.should.contain.all.the.elements(
             LintError(
-                line = 6, col = 17,
-                ruleId = "test:no-break-or-continue",
+                line = 6,
+                col = 17,
+                ruleId = "no-break-or-continue",
                 detail = "Loop or statement breakers like break or continue are not allowed. Please do it wiser"
             ),
             LintError(
-                line = 8, col = 17,
-                ruleId = "test:no-break-or-continue",
+                line = 8,
+                col = 17,
+                ruleId = "no-break-or-continue",
                 detail = "Loop or statement breakers like break or continue are not allowed. Please do it wiser"
             )
         )
