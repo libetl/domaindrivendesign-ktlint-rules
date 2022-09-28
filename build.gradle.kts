@@ -5,17 +5,17 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
 
 group = "org.toile-libre.libe"
-version = "1.0.0"
+version = "2.0.0"
 
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("io.codearte.nexus-staging") version "0.30.0"
-    `java-library`
     jacoco
     application
     idea
+    `java-library`
     `maven-publish`
     signing
 }
@@ -134,12 +134,14 @@ tasks.withType<Test> {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 }
+
 repositories {
     mavenCentral()
     maven {
         url = URI("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     jvmTarget = "1.8"
@@ -148,11 +150,18 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
+val sources by tasks.registering(Jar::class) {
+    archiveBaseName.set(project.name)
+    archiveClassifier.set("sources")
+    archiveVersion.set(null as String?)
+    from(sourceSets.main.get().allSource)
+}
 
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
+        create<MavenPublication>("library") {
             from(components["java"])
+            artifact(sources)
             pom.name.set("domaindrivendesign-ktlint-rules")
             pom.description.set("Domain Driven Design ktlint rules")
             pom.url.set("https://github.com/libetl/domaindrivendesign-ktlint-rules")
@@ -180,11 +189,17 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            url = URI("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+            credentials {
+                username = "libetl"
+                password = project.properties["signing.password"] as String
+            }
+        }
+    }
 }
 
-val sources by tasks.registering(Jar::class) {
-    archiveBaseName.set(project.name)
-    archiveClassifier.set("sources")
-    archiveVersion.set(null as String?)
-    from(sourceSets.main.get().allSource)
+signing {
+    sign(publishing.publications["library"])
 }
