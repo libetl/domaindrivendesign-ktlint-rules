@@ -60,16 +60,16 @@ kotlin {
 
 dependencies {
     compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
-    compileOnly("com.pinterest:ktlint:0.45.2")
+    compileOnly("com.pinterest:ktlint:0.43.2")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect")
-    api("com.pinterest.ktlint:ktlint-core:0.45.2")
+    api("com.pinterest.ktlint:ktlint-core:0.43.2")
     testImplementation("org.junit.platform:junit-platform-commons:1.9.0")
     testImplementation("org.junit.platform:junit-platform-engine:1.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.0")
-    testImplementation("com.pinterest.ktlint:ktlint-test:0.45.2")
+    testImplementation("com.pinterest.ktlint:ktlint-test:0.43.2")
     testImplementation("com.winterbe:expekt:0.5.0")
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -82,7 +82,7 @@ tasks.withType<KotlinCompile> {
 
 dependencies {
     // you can create a ktlint run config with that
-    compileOnly("com.pinterest:ktlint:0.45.2")
+    compileOnly("com.pinterest:ktlint:0.43.2")
     compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 }
 
@@ -102,7 +102,7 @@ configure<IdeaModel> {
 }
 
 ktlint {
-    version.set("0.45.2")
+    version.set("0.43.2")
     debug.set(false)
     verbose.set(false)
     android.set(false)

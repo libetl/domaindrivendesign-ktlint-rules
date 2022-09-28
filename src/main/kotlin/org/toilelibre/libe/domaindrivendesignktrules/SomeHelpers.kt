@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
 object SomeHelpers {
-    private const val CATCH_CLAUSE: Short = 251
 
     private fun determineType(type: KtTypeElement?): String? =
         when (type) {
@@ -53,7 +52,7 @@ object SomeHelpers {
 
     fun ASTNode.isNotAClass() = this.elementType != KtStubElementTypes.CLASS
     fun ASTNode.isNotAMethod() = this.elementType != KtStubElementTypes.FUNCTION
-    fun ASTNode.isNotACatchElement() = this.elementType.index != CATCH_CLAUSE
+    fun ASTNode.isNotACatchElement() = elementType.toString() != "CATCH"
 
     @Suppress("UNCHECKED_CAST")
     val KtClassOrObject.methods
