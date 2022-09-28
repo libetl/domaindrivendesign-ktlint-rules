@@ -1,5 +1,6 @@
 import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
@@ -12,6 +13,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("io.codearte.nexus-staging") version "0.30.0"
+    id("org.jetbrains.dokka") version "1.7.10"
     jacoco
     application
     idea
@@ -156,12 +158,19 @@ val sources by tasks.registering(Jar::class) {
     archiveVersion.set(null as String?)
     from(sourceSets.main.get().allSource)
 }
+val javadocSources by tasks.registering(Jar::class) {
+    archiveBaseName.set(project.name)
+    archiveClassifier.set("javadoc")
+    archiveVersion.set(null as String?)
+    from(tasks["dokkaJavadoc"])
+}
 
 publishing {
     publications {
         create<MavenPublication>("library") {
             from(components["java"])
             artifact(sources)
+            artifact(javadocSources)
             pom.name.set("domaindrivendesign-ktlint-rules")
             pom.description.set("Domain Driven Design ktlint rules")
             pom.url.set("https://github.com/libetl/domaindrivendesign-ktlint-rules")
