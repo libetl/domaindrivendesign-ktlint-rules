@@ -119,6 +119,23 @@ class Tester(override var id: ObjectId) {
                 cb = { e, _ -> collector.add(e) }
             )
         )
+        KtLint.lint(
+            KtLint.ExperimentalParams(
+                text =
+                """
+package some.packages
+
+class TesterWithCoroutineContext(@Qualifier override var id: ObjectId) {
+  fun isValid(){
+    return true
+  }
+}
+
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }),
+                cb = { e, _ -> collector.add(e) }
+            )
+        )
 
         collector.should.be.empty
     }

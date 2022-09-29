@@ -35,7 +35,7 @@ class AllClassMembersMustBePrivateAndImmutable : Rule("no-class-member-public-or
 
         if (isDataClass || !parameter.hasValOrVar()) return
 
-        if (parameter.modifierList?.firstChild?.text == "override") return
+        if (parameter.modifierList?.text?.contains("override") == true) return
 
         val isMutable = parameter.isMutable
         val isPrivate = parameter.modifierList?.text?.contains("private") ?: false
