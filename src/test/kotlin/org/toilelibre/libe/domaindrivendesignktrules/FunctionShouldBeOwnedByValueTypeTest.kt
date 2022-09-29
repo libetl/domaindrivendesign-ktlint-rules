@@ -108,6 +108,53 @@ class ArrangerCardsToggler(private val config: ConfigurationResolver) {
     }
 
     @Test
+    fun testNoViolationWhenTheFunctionUsesAReceivedType() {
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
+        KtLint.lint(
+            KtLint.ExperimentalParams(
+                text =
+                """
+    package com.company.service.test.domain.booking
+
+    import com.company.service.test.domain.payment.Instance
+    import com.company.service.test.domain.payment.search.RetrievePayment
+    import com.company.service.test.domain.transverse.DomainDrivenDesignAnnotations.DomainService
+    import org.slf4j.LoggerFactory
+    
+    @ValueType
+    data class Booking(val id: String?, val bookingContext: BookingContext?, val traveler: Traveler) {
+      val rightOriginalBookingPaymentInstanceId get() = id
+      val hasProvidedAnOriginalBookingPaymentInstance get() = id != 0
+    }
+
+    @DomainService
+    class RetrieveOriginalBookingPaymentInstance(private val retrieveOriginalPayment: RetrievePayment) {
+
+        fun fromThe(booking: Booking) =
+            if (booking.hasProvidedAnOriginalBookingPaymentInstance)
+                retrieveOriginalPayment byIdFromThe booking
+                    ?: retrieveOriginalPayment byLookingToHistoryFromThe booking
+            else null
+
+        companion object {
+            private val LOGGER = LoggerFactory.getLogger(RetrieveOriginalBookingPaymentInstance::class.java)
+
+            private infix fun RetrievePayment.byIdFromThe(booking: Booking) =
+                by(listOf(booking.rightOriginalBookingPaymentInstanceId!!))
+                    .firstOrNull()
+                    .takeIf { it?.bookingContext?.userId == booking.traveler.userId }
+        }
+    }
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
+                cb = { e, _ -> collector.add(e) }
+            )
+        )
+
+        collector.should.be.empty
+    }
+
+    @Test
     fun testNoViolationWhenTheFunctionUsesAClassFunction() {
         val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(

@@ -70,7 +70,8 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
 
         if (isDataClass) return
 
-        if (function.valueParameters.size == 1 &&
+        if (function.receiverTypeReference == null &&
+            function.valueParameters.size == 1 &&
             !function.valueParameters[0].isVarArg &&
             listOfDataClasses.contains(
                 currentFileImports[function.valueParameters[0].typeName]
