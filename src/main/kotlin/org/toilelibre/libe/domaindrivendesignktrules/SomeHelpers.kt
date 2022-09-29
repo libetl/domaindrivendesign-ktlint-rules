@@ -4,7 +4,6 @@ import com.pinterest.ktlint.core.ast.nextCodeSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFunction
 import org.jetbrains.kotlin.psi.KtFunctionType
@@ -18,7 +17,6 @@ import org.jetbrains.kotlin.psi.KtTypeElement
 import org.jetbrains.kotlin.psi.KtTypeReference
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.forEachDescendantOfType
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
 object SomeHelpers {
@@ -46,9 +44,10 @@ object SomeHelpers {
         }.toMap()
 
     val KtFunction.variables
-        get(): List<KtReferenceExpression> = bodyBlockExpression?.statements
-            ?.flatMap { it.getChildrenOfType<KtDotQualifiedExpression>().toList() }
-            ?.flatMap { it.getChildrenOfType<KtReferenceExpression>().toList() } ?: listOf()
+        get(): List<KtReferenceExpression> =
+            (bodyBlockExpression?.statements ?:
+            bodyExpression?.let { listOf(it) })
+            ?.flatMap { it.allThe<KtReferenceExpression>().toList() } ?: listOf()
 
     fun ASTNode.isNotAClass() = this.elementType != KtStubElementTypes.CLASS
     fun ASTNode.isNotAMethod() = this.elementType != KtStubElementTypes.FUNCTION

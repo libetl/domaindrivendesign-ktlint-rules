@@ -73,9 +73,9 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
         if (function.valueParameters.size == 1 &&
             !function.valueParameters[0].isVarArg &&
             listOfDataClasses.contains(
-                    currentFileImports[function.valueParameters[0].typeName]
-                        ?: "$owningPackage.${function.valueParameters[0].typeName}"
-                ) &&
+                currentFileImports[function.valueParameters[0].typeName]
+                    ?: "$owningPackage.${function.valueParameters[0].typeName}"
+            ) &&
             variables.none { members.contains(it) }
         ) {
             emit.problemWith(
@@ -90,7 +90,7 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
     private fun EmitFunction.problemWith(startOffset: Int, name: String, valueName: String, valueType: String) =
         this(
             startOffset,
-            "The function $name uses solely the value type $valueName ($valueType) as parameter.\n" +
+            "The function $name uses the value type $valueName ($valueType) as its only parameter.\n" +
                 "In this situation, you should make it a member of $valueType.",
             false
         )
