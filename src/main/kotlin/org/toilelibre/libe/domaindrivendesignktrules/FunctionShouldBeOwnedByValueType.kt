@@ -74,9 +74,9 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
             function.valueParameters.size == 1 &&
             !function.valueParameters[0].isVarArg &&
             listOfDataClasses.contains(
-                currentFileImports[function.valueParameters[0].typeName]
-                    ?: "$owningPackage.${function.valueParameters[0].typeName}"
-            ) &&
+                    currentFileImports[function.valueParameters[0].typeName]
+                        ?: "$owningPackage.${function.valueParameters[0].typeName}"
+                ) &&
             variables.none { members.contains(it) }
         ) {
             emit.problemWith(

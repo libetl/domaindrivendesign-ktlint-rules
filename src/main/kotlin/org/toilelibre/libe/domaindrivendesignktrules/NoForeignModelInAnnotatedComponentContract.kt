@@ -6,6 +6,8 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.isProtected
+import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
@@ -64,7 +66,12 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
             return
         }
 
-        val methods = classInformation.methods
+        val methods =
+            if (classInformation.annotationNames.intersect(listOf("Gateway", "Repository"))
+                .isNotEmpty()
+            ) {
+                classInformation.methods.filter { it.isPublic || it.isProtected() }
+            } else classInformation.methods
 
         val violations =
             methods.map { method ->
