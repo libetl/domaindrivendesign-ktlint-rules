@@ -4,16 +4,14 @@ import com.pinterest.ktlint.core.ast.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
-import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.psiUtil.getValueParameters
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
-import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.allThe
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAMethod
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
+import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.variables
 
 class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-from-a-controller") {
 
@@ -33,7 +31,10 @@ class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-
         val classInformation =
             node.parent(KtStubElementTypes.CLASS)?.psi as KtClass? ?: return
 
-        val isListener = method.annotationNames.any { it.endsWith("Listener") }
+        val isListener = method.annotationNames.any {
+            it.endsWith("Listener") &&
+                !it.endsWith("EventListener")
+        }
 
         if (classInformation.name?.contains("GraphQL") == true) return
 
@@ -50,11 +51,7 @@ class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-
             .filter { (imports[it.second] ?: it.second).contains(".actions.") }
             .toMap()
 
-        val allTheReferenceExpressions = (
-            method.bodyBlockExpression?.statements
-                ?: if (method is KtNamedFunction) listOf(method.initializer) else listOf()
-            )
-            .allThe<KtReferenceExpression>()
+        val allTheReferenceExpressions = method.variables
 
         val result =
             allTheReferenceExpressions.any { expression ->

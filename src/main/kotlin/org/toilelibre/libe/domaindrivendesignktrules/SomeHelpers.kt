@@ -45,7 +45,8 @@ object SomeHelpers {
 
     val KtFunction.variables
         get(): List<KtReferenceExpression> =
-            (bodyBlockExpression?.statements ?: bodyExpression?.let { listOf(it) })
+            (bodyBlockExpression?.statements ?: bodyExpression?.let { listOf(it) }
+            ?: (this as? KtNamedFunction)?.let { listOf(it) })
                 ?.flatMap { it.allThe<KtReferenceExpression>().toList() } ?: listOf()
 
     fun ASTNode.isNotAClass() = this.elementType != KtStubElementTypes.CLASS
