@@ -73,10 +73,19 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
         if (function.receiverTypeReference == null &&
             function.valueParameters.size == 1 &&
             !function.valueParameters[0].isVarArg &&
+            function.annotationNames.intersect(
+                listOf(
+                    "ExceptionHandler",
+                    "RestController",
+                    "Controller",
+                    "RabbitListener",
+                    "Endpoint"
+                )
+            ).isEmpty() &&
             listOfDataClasses.contains(
-                    currentFileImports[function.valueParameters[0].typeName]
-                        ?: "$owningPackage.${function.valueParameters[0].typeName}"
-                ) &&
+                currentFileImports[function.valueParameters[0].typeName]
+                    ?: "$owningPackage.${function.valueParameters[0].typeName}"
+            ) &&
             variables.none { members.contains(it) }
         ) {
             emit.problemWith(

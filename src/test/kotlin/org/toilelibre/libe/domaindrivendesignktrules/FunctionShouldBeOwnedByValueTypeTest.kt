@@ -186,6 +186,38 @@ class PriceConverter(val currencyHelper: CurrencyHelper) {
     }
 
     @Test
+    fun testNoViolationWhenTheFunctionIsAnExceptionHandler() {
+        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
+        KtLint.lint(
+            KtLint.ExperimentalParams(
+                text =
+                """
+package some.packages
+
+@ValueType
+data class ProductNotAvailableException(val name: String): RuntimeException
+
+@ControllerAdvice
+class ExceptionHandler() {
+  @ExceptionHandler(ProductNotAvailableException::class)
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  fun handleAProductNotAvailableException(productNotAvailableException: ProductNotAvailableException): ErrorNode {
+        LOGGER.error(ex.message, ex)
+        return ErrorNode(name = productNotAvailableException.name, errorDescription = productNotAvailableException.message)
+    }
+}
+
+                """.trimIndent(),
+                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
+                cb = { e, _ -> collector.add(e) }
+            )
+        )
+
+        collector.should.be.empty
+    }
+
+    @Test
     fun testViolation() {
         val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
         KtLint.lint(
