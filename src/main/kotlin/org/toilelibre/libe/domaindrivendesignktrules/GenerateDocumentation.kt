@@ -114,7 +114,8 @@ object GenerateDocumentation {
                                                 "div"("class" to "snippet-code snipper-code-${if (good) "good" else "bad"}") {
                                                     "pre" {
                                                         "code"("class" to "language-kotlin") {
-                                                            code
+                                                            code.replace("<", "&lt;")
+                                                                .replace(">", "&gt;")
                                                         }
                                                     }
                                                 }
