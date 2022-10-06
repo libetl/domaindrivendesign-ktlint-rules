@@ -1,0 +1,1107 @@
+            <html>
+              <head>
+                <meta charset="utf-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="description" content="Additional ktlint-rules for domain driven design">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+                <title>domain-driven-design-ktlint-rules</title>
+
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,thin,light,black,medium&amp;lang=en">
+                <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+                <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.min.css">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-kotlin.min.js" 
+                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                <style>
+                body {
+                  background-color: black;
+                }
+                
+                h6 {
+                  position: sticky;
+                  top: 0
+                }
+                
+                .padding-block {
+                  width: 100%;
+                  height: 100%;
+                }
+                
+                .snippet-good {
+                  color: #2e7b32;
+                  font-weight: 500;
+                  font-family: Roboto, Helvetica, Arial, sans-serif;
+                }
+                .snippet-bad {
+                  color: red;
+                  font-weight: 500;
+                  font-family: Roboto, Helvetica, Arial, sans-serif;
+                }
+                
+                code[class*="language-"],
+                pre[class*="language-"] {
+                	color: #f92aad;
+                	text-shadow: 0 0 2px #100c0f, 0 0 5px #dc078e33, 0 0 10px #fff3;
+                	background: none;
+                	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+                	font-size: 1em;
+                	text-align: left;
+                	white-space: pre;
+                	word-spacing: normal;
+                	word-break: normal;
+                	word-wrap: normal;
+                	line-height: 1.5;
+
+                	-moz-tab-size: 4;
+                	-o-tab-size: 4;
+                	tab-size: 4;
+
+                	-webkit-hyphens: none;
+                	-moz-hyphens: none;
+                	-ms-hyphens: none;
+                	hyphens: none;
+                }
+
+                /* Code blocks */
+                pre[class*="language-"] {
+                	padding: 1em;
+                	margin: .5em 0;
+                	overflow: auto;
+                }
+
+                :not(pre) > code[class*="language-"],
+                pre[class*="language-"] {
+                	background-color: transparent !important;
+                	background-image: linear-gradient(to bottom, #2a2139 75%, #34294f);
+                }
+
+                /* Inline code */
+                :not(pre) > code[class*="language-"] {
+                	padding: .1em;
+                	border-radius: .3em;
+                	white-space: normal;
+                }
+
+                .token.comment,
+                .token.block-comment,
+                .token.prolog,
+                .token.doctype,
+                .token.cdata {
+                	color: #8e8e8e;
+                }
+
+                .token.punctuation {
+                	color: #ccc;
+                }
+
+                .token.tag,
+                .token.attr-name,
+                .token.namespace,
+                .token.number,
+                .token.unit,
+                .token.hexcode,
+                .token.deleted {
+                	color: #e2777a;
+                }
+
+                .token.property,
+                .token.selector {
+                	color: #72f1b8;
+                	text-shadow: 0 0 2px #100c0f, 0 0 10px #257c5575, 0 0 35px #21272475;
+                }
+
+                .token.function-name {
+                	color: #6196cc;
+                }
+
+                .token.boolean,
+                .token.selector .token.id,
+                .token.function {
+                	color: #fdfdfd;
+                	text-shadow: 0 0 2px #001716, 0 0 3px #03edf975, 0 0 5px #03edf975, 0 0 8px #03edf975;
+                }
+
+                .token.class-name {
+                	color: #fff5f6;
+                	text-shadow: 0 0 2px #000, 0 0 10px #fc1f2c75, 0 0 5px #fc1f2c75, 0 0 25px #fc1f2c75;
+                }
+
+                .token.constant,
+                .token.symbol {
+                	color: #f92aad;
+                	text-shadow: 0 0 2px #100c0f, 0 0 5px #dc078e33, 0 0 10px #fff3;
+                }
+
+                .token.important,
+                .token.atrule,
+                .token.keyword,
+                .token.selector .token.class,
+                .token.builtin {
+                	color: #f4eee4;
+                	text-shadow: 0 0 2px #393a33, 0 0 8px #f39f0575, 0 0 2px #f39f0575;
+                }
+
+                .token.string,
+                .token.char,
+                .token.attr-value,
+                .token.regex,
+                .token.variable {
+                	color: #f87c32;
+                }
+
+                .token.operator,
+                .token.entity,
+                .token.url {
+                	color: #67cdcc;
+                }
+
+                .token.important,
+                .token.bold {
+                	font-weight: bold;
+                }
+
+                .token.italic {
+                	font-style: italic;
+                }
+
+                .token.entity {
+                	cursor: help;
+                }
+
+                .token.inserted {
+                	color: green;
+                }
+                </style>
+              </head>
+              <body>
+                <div id="rules" class="ktlint-screen-section"><div class="mdl-typography--display-1-color-contrast mdl-color-text--white mdl-typography--text-center ktlint-category">Domain Driven Design Ktlint-rules</div><div class="ktlint-content"><section id="NoPrimitiveObsessionInAnnotatedComponent"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoPrimitiveObsessionInAnnotatedComponent">No Primitive Obsession In Annotated Component</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">Waived Violation When There Is Only One Argument</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun someAssertion(b: Boolean) {
+  }
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun someMethod(i: Int, b: Boolean) {
+  }
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation With Only One Primitive Argument</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun someMethod(paymentMean: PaymentMean, b: Boolean) {
+  }
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation With Only One Nullable Primitive Argument</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun someMethod(paymentMean: PaymentMean, b: Boolean?) {
+  }
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun someMethod(paymentMean: PaymentMean, billingInfo: BillingInfo) {
+  }
+
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="EachRoleShouldBeInTheRightPackage"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#EachRoleShouldBeInTheRightPackage">Each Role Should Be In The Right Package</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation Action</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages.infra
+
+@Action
+class MyAction {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation Domain Service</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages.infra
+
+@DomainService
+class MyDomainService {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation Repository</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages.action
+
+@Repository
+class MyRepository {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation Gateway</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages.action
+
+@Gateway
+class MyGateway {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation Component</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages.action
+
+@Component
+class MyComponent {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation Component</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages.infra.gateways.myservice
+
+@Component
+class MyComponent {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation Action</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages.actions
+
+@Action
+class MyAction {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation When No Package</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+
+class MyClass {
+
+  fun someMethod() {
+  }
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="NoForOrWhileInActionClass"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoForOrWhileInActionClass">No For Or While In Action Class</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun someMethod() {
+    for (i in 0..10){
+      println("Hello World")
+    }
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Nested While</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+  private var hello = true
+
+  fun someMethod() {
+    if (hello){
+      var i = 0
+      while (i &lt; 10){
+        println("Hello World")
+        i++
+      }
+    }
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+data class Traveler(val id: Int)
+
+fun List&lt;Traveler&gt;.tookApart(toDo: (Traveler) -&gt; Unit) = this.map { toDo(it) }
+
+@Action
+class MyAction {
+  private var hello = true
+
+  fun someMethod(theTravelers : List&lt;Traveler&gt;) {
+    theTravelers.tookApart { println ("Hello " + it) }
+  }
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="NoTemplateUseInActionOrDomainService"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoTemplateUseInActionOrDomainService">No Template Use In Action Or Domain Service</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+
+@Action
+class MyAction {
+
+  fun someMethod() {
+    val template = RestTemplate()
+    val template2 = org.springframework.data.mongodb.core.MongoTemplate()
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation In Domain Service</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+
+@DomainService
+class MyDomainService {
+
+  fun someMethod() {
+    val template = RestTemplate()
+    val template2 = org.springframework.data.mongodb.core.MongoTemplate()
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@DomainService
+class MyAction {
+
+  private val userProfileReader: UserProfileReader
+
+  fun someMethod(val id: Int) {
+    val userProfile = userProfileReader.read(id)
+  }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation In Gateway</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+
+@Gateway
+class MyGateway {
+
+  fun someMethod() {
+    val template = RestTemplate()
+    val template2 = org.springframework.data.mongodb.core.MongoTemplate()
+  }
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="NoBreakOrContinue"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoBreakOrContinue">No Break Or Continue</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+fun someMethod() {
+  var i
+  for (i in 0..10){
+    if (i == 2) continue
+    println (i + " (skipping 3)")
+    if (i == 4) break
+  }
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="DataClassNotAnnotated"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#DataClassNotAnnotated">Data Class Not Annotated</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@ForeignModel
+data class A(val i: Int)
+
+data class B(val j: Int)
+
+@ForeignModel
+data class C(val k: Int)
+
+data class D(val l: Int)
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ForeignModel
+data class A(val i: Int)
+
+@ValueType
+data class B(val j: Int)
+
+@ForeignModel
+data class C(val k: Int)
+                </code></pre></div></div></div></div></div></section><br/><section id="AllNonForeignDataClassesMembersMustBeImmutable"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#AllNonForeignDataClassesMembersMustBeImmutable">All Non Foreign Data Classes Members Must Be Immutable</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation With Foreign Model</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@Entity
+@ForeignModel
+data class Account(var id: ObjectId, var firstName: String, var lastName: String)
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Entity
+data class Account(var id: ObjectId, var firstName: String, var lastName: String)
+
+                </code></pre></div></div></div></div></div></section><br/><section id="AnActionCannotUseAnotherAction"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#AnActionCannotUseAnotherAction">An Action Cannot Use Another Action</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation1</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction1 {
+}
+
+@Action
+class MyAction2 {
+   val action1: MyAction1
+}
+
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation2</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction1 {
+  val myAction2: MyAction2
+}
+
+@Action
+class MyAction2 {
+}
+
+
+                </code></pre></div></div></div></div></div></section><br/><section id="AClassWithoutFunctionMustBeADataClass"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#AClassWithoutFunctionMustBeADataClass">AClass Without Function Must Be AData Class</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+class MyClass {
+  private var myFieldOne: Int
+  private var myFieldTwo: String
+  private var myFieldThree: Boolean
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation While Cheating On The Parent Class</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+class MyClass : Object {
+  private var myFieldOne: Int
+  private var myFieldTwo: String
+  private var myFieldThree: Boolean
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="ADataClassCannotUseAMap"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#ADataClassCannotUseAMap">AData Class Cannot Use AMap</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class MyClass (
+  val myFieldOne: Int,
+  val myFieldTwo: String,
+  val myFieldThree: Boolean
+)
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class MyClass (
+  val myFieldOne: Int,
+  val myFieldTwo: String,
+  val myFieldThree: Map&lt;String, Any&gt;
+)
+
+                </code></pre></div></div></div></div></div></section><br/><section id="NoIfInsideIf"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoIfInsideIf">No If Inside If</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">allowed When In Expression</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+fun someMethod() {
+    val i = 0
+    var below2 = false
+    if (i &gt; 0)
+      below2 = if (i &lt; 2) true else false
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">else If Is Allowed</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+fun someMethod() {
+    val i = 0
+    if (i &lt; 0)
+      println("i must be below 0")
+    else if (i &gt;= 0)
+       println ("i must be equal to 0")
+    
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+fun someMethod() {
+    val i = 0
+    if (i &lt;= 0) {
+        if (i &gt;= 0) {
+            println ("i must be equal to 0")
+        }
+    }
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="NoForeignModelInAnnotatedComponentContract"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoForeignModelInAnnotatedComponentContract">No Foreign Model In Annotated Component Contract</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation Action Role First</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package org.toilelibre.libe.domaindrivendesignktrules
+
+import kotlin.String
+import org.toilelibre.libe.domaindrivendesignktrules.A
+
+@Action
+class B {
+    fun testingTheViolation(a: A) {
+    }
+}
+
+@ForeignModel
+data class A
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package org.toilelibre.libe.domaindrivendesignktrules
+
+import kotlin.String
+import org.toilelibre.libe.domaindrivendesignktrules.A
+
+@ForeignModel
+data class A
+
+@Action
+class B {
+    fun testingTheViolation(a: A) {
+    }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation In Infra</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package org.toilelibre.libe.domaindrivendesignktrules
+
+import kotlin.String
+import org.toilelibre.libe.domaindrivendesignktrules.A
+
+@ForeignModel
+data class A
+
+@Gateway
+class B {
+    fun testingTheViolation(a: A) {
+    }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">Private Method In Infra Should Be Tolerated</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package org.toilelibre.libe.domaindrivendesignktrules
+
+import kotlin.String
+import org.toilelibre.libe.domaindrivendesignktrules.A
+
+@ForeignModel
+data class A
+
+@Gateway
+class B {
+    private fun testingTheViolation(a: A) {
+    }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation With Return Type</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package org.toilelibre.libe.domaindrivendesignktrules
+
+import org.toilelibre.libe.domaindrivendesignktrules.A
+
+@ForeignModel
+data class A(val e: Int)
+
+@ValueType
+data class C(val f: Int)
+
+@Action
+class B {
+    fun testingTheViolation(): A {
+      return A()
+    }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation In Domain Service</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package org.toilelibre.libe.domaindrivendesignktrules
+
+import kotlin.String
+import org.toilelibre.libe.domaindrivendesignktrules.A
+
+@ForeignModel
+data class A
+
+@DomainService
+class B {
+    fun testingTheViolation(a: A) {
+    }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">should Not Report Anything</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages.actions
+
+import some.packages.domain.transverse.DomainDrivenDesignAnnotations.Action
+import some.packages.infra.database.Storage
+import org.bson.types.ObjectId
+
+@Entity
+data class Instance(val id: Int)
+
+@Action
+class GetInstanceByRowId(private val storage: Storage) {
+
+    infix fun retrievePaymentBy(`an id`: ObjectId): Instance? = storage rowMatching `an id`
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="NeedsOneCallToAnActionFromAController"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NeedsOneCallToAnActionFromAController">Needs One Call To An Action From AController</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">no Violation If Action Invocation Inside Nested Block</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+        package some.packages.infra.endpoint
+
+        import some.packages.actions.HandleVerifyRequest
+        
+        @Action
+        class HandleVerifyRequest {
+            fun with(verifyOperationRequest: VerifyOperationRequest){
+            }
+        }
+
+        @Controller
+        class TheController(val handleVerifyRequest: HandleVerifyRequest) {
+            fun performVerify(
+                @RequestBody verifyOperationRequest: VerifyOperationRequest
+            ) = runBlocking {
+                handleVerifyRequest.with(verifyOperationRequest)
+            }
+        }
+        </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class TheAction {
+  fun doIt(){
+  }
+}
+
+@Controller
+class TheController {
+  fun someMethod() {
+    println("Hello world")
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">violation If The Method Is AMessage Queue Listener</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+class TheController {
+  @RabbitListener
+  fun someMethod() {
+    println("Hello world")
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">no Violation If The Method Is Just An Internal Event Listener</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+class TheController {
+  @EventListener
+  fun someMethod() {
+    println("Hello world")
+  }
+}
+
+                </code></pre></div></div></div></div></div></section><br/><section id="NoGenericCatch"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoGenericCatch">No Generic Catch</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+
+fun someMethod() {
+ try {
+   println("Hello World")
+ } catch (e: Exception){
+ }
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="AllClassMembersMustBePrivateAndImmutable"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#AllClassMembersMustBePrivateAndImmutable">All Class Members Must Be Private And Immutable</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Repository
+class MyRepository(var dataSource: DataSource, private var jdbcUrl: String, val password: String){
+
+  fun find(id: ObjectId){ // this should be allowed
+    var ref = id.toString() // this should be allowed
+    return dataSource.findOne(ref)
+  }
+
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation For Data Classes</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@Entity
+@ForeignModel
+data class Account(val id: ObjectId, val firstName: String, val lastName: String)
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation For Non Var And Non Val Parameters</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+class Tester(id: ObjectId) {
+  fun isValid(){
+    return true
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation For Overriden Value Parameters</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+class Tester(override var id: ObjectId) {
+  fun isValid(){
+    return true
+  }
+}
+
+                </code></pre></div></div></div></div></div></section><br/><section id="ActionOnlyHasOnePublicMethod"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#ActionOnlyHasOnePublicMethod">Action Only Has One Public Method</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun doIt(){
+    this.doItBetter()
+  }
+
+  private fun doItBetter(){
+  }
+
+  fun doItAgain(){
+    this.doItAgainBetter()
+  }
+
+  private fun doItAgainBetter(){
+  }
+
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@Action
+class MyAction {
+
+  fun doIt(){
+  }
+
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="NoForeignInfraUsageInInfra"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#NoForeignInfraUsageInInfra">No Foreign Infra Usage In Infra</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">integration Test In Test</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package com.egencia.service.infra.test1
+
+import com.egencia.service.infra.test1.Test1
+import com.egencia.service.infra.test2.Test2
+
+@DomainService
+class HelloIT
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">In Test</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package com.egencia.service.infra.test1
+
+import com.egencia.service.infra.test1.Test1
+import com.egencia.service.infra.test2.Test2
+
+@DomainService
+class MyTest
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">Outside Infra</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package com.egencia.service.domain.ktlintrules
+
+import com.egencia.service.infra.test1.Test1
+import com.egencia.service.infra.test2.Test2
+
+@DomainService
+class Hello
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation In Infra</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package com.egencia.service.infra.test1
+
+import com.egencia.service.infra.test1.Test1
+import com.egencia.service.infra.test1.Test11
+
+@Gateway
+class Hello
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation For Spring Config</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package com.egencia.service.infra.test1
+
+import com.egencia.service.infra.test1.Test1
+import com.egencia.service.infra.test2.Test2
+
+@Configuration
+class TestConfiguration
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation In Infra</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package com.egencia.service.infra.test1
+
+import com.egencia.service.infra.test1.Test1
+import com.egencia.service.infra.test2.Test2
+
+@Gateway
+class Hello
+                </code></pre></div></div></div></div></div></section><br/><section id="FunctionShouldBeOwnedByValueType"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#FunctionShouldBeOwnedByValueType">Function Should Be Owned By Value Type</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class Currency {
+  fun rate(olderCurrency: Currency): Float {
+     return CURRENCY_TABLE[olderCurrency]
+  }
+}
+
+@ValueType
+data class Price (
+  val currency: Currency,
+  val amount: Float,
+) {
+  fun toCurrency(newCurrency: Currency): Float {
+    return newCurrency.rate(currency) * amount
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation When The Function Uses AClass Member</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class Currency(val name: String, val currencyTable: Map&lt;String, Float&gt;)
+
+class PriceConverter(val currencyHelper: CurrencyHelper) {
+  fun getRate(newCurrency: Currency): Float {
+    return currencyHelper.extractRateFromCurrencyTable(currency.name, newCurrency.name)
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation When The Function Uses AComponent</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package com.company.service.test.infra.gateways.configservice
+
+import com.company.library.configuration.configservice.resolver.ConfigurationResolver
+import com.company.library.configuration.configservice.resolver.ResolverParams
+import com.company.service.test.infra.gateways.configservice.ProductAndTravelerReferences
+import com.company.service.test.domain.transverse.DomainDrivenDesignAnnotations.Gateway
+
+@ValueType
+data class ProductAndTravelerReferences(pointOfSale: PointOfSale, company: Company, productsAndTravelersMapping: List&lt;Mapping&gt;)
+
+@Gateway
+class ArrangerCardsToggler(private val config: ConfigurationResolver) {
+
+    infix fun displayOrHideArrangerCardsAccordingTo(theInput: ProductAndTravelerReferences): Boolean =
+        theInput.productsAndTravelersMapping.any {
+            val params = ResolverParams()
+                .withProductId(theInput.pointOfSale.code)
+                .withCompanyId(theInput.company.id.value)
+                .withStripe("lineOfBusiness", it.designation.lineOfBusiness.name)
+            config.resolve("arrangerCreditCardAllowed", params) as String? == "true" &&
+                config.resolve("arrangercc", params) as String? == "1"
+        }
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation When The Function Uses AReceived Type</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+    package com.company.service.test.domain.booking
+
+    import com.company.service.test.domain.payment.Instance
+    import com.company.service.test.domain.payment.search.RetrievePayment
+    import com.company.service.test.domain.transverse.DomainDrivenDesignAnnotations.DomainService
+    import org.slf4j.LoggerFactory
+    
+    @ValueType
+    data class Booking(val id: String?, val bookingContext: BookingContext?, val traveler: Traveler) {
+      val rightOriginalBookingPaymentInstanceId get() = id
+      val hasProvidedAnOriginalBookingPaymentInstance get() = id != 0
+    }
+
+    @DomainService
+    class RetrieveOriginalBookingPaymentInstance(private val retrieveOriginalPayment: RetrievePayment) {
+
+        fun fromThe(booking: Booking) =
+            if (booking.hasProvidedAnOriginalBookingPaymentInstance)
+                retrieveOriginalPayment byIdFromThe booking
+                    ?: retrieveOriginalPayment byLookingToHistoryFromThe booking
+            else null
+
+        companion object {
+            private val LOGGER = LoggerFactory.getLogger(RetrieveOriginalBookingPaymentInstance::class.java)
+
+            private infix fun RetrievePayment.byIdFromThe(booking: Booking) =
+                by(listOf(booking.rightOriginalBookingPaymentInstanceId!!))
+                    .firstOrNull()
+                    .takeIf { it?.bookingContext?.userId == booking.traveler.userId }
+        }
+    }
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation When The Function Uses AClass Function</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class Currency(val name: String, val currencyTable: Map&lt;String, Float&gt;)
+
+class PriceConverter(val currencyHelper: CurrencyHelper) {
+  fun getRate(newCurrency: Currency): Float {
+    return this.delegateToCurrencyHelper(newCurrency)
+  }
+
+  private fun delegateToCurrencyHelper(newCurrency: Currency) {
+    return currencyHelper.extractRateFromCurrencyTable(currency.name, newCurrency.name)
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation When The Function Is An Exception Handler</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class ProductNotAvailableException(val name: String): RuntimeException
+
+@ControllerAdvice
+class ExceptionHandler() {
+  @ExceptionHandler(ProductNotAvailableException::class)
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  fun handleAProductNotAvailableException(productNotAvailableException: ProductNotAvailableException): ErrorNode {
+        LOGGER.error(ex.message, ex)
+        return ErrorNode(name = productNotAvailableException.name, errorDescription = productNotAvailableException.message)
+    }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class Currency(val name: String, val currencyTable: Map&lt;String, Float&gt;)
+
+class PriceConverter {
+  fun getRate(newCurrency: Currency): Float {
+    return newCurrency.currencyTable[currency.name]
+  }
+}
+
+                </code></pre></div></div></div></div></div></section><br/><section id="GatewayOrRepositoryMustHaveOnlyOneTemplateVariable"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#GatewayOrRepositoryMustHaveOnlyOneTemplateVariable">Gateway Or Repository Must Have Only One Template Variable</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+
+@Gateway
+class MyGateway {
+
+  private val restTemplate1: RestTemplate
+  private val restTemplate2: RestTemplate
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Multiple Kinds Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
+
+@Gateway
+class MyGateway {
+
+  private val restTemplate: RestTemplate
+  private val mongoTemplate: MongoTemplate
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Repository Violation</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
+
+@Repository
+class MyRepository {
+
+  private val restTemplate: RestTemplate
+  private val mongoTemplate: MongoTemplate
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
+
+@Repository
+class MyRepository {
+
+  private val mongoTemplate: MongoTemplate
+
+}
+                </code></pre></div></div>
+<div class="snippet-caption snippet-good"><span class="snippet-hint">Repository No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+import org.springframework.web.client.RestTemplate
+import org.springframework.data.mongodb.core.MongoTemplate
+
+@Repository
+class MyRepository {
+
+  private val mongoTemplate: MongoTemplate
+
+}
+                </code></pre></div></div></div></div></div></section><br/><section id="ADataClassCannotUseAComponent"><div class="mdl-grid"><div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone"><h6><a href="#ADataClassCannotUseAComponent">AData Class Cannot Use AComponent</a></h6><div class="padding-block">&nbsp;</div></div><div class="mdl-cell mdl-cell--9-col mdl-cell--12-col-phone"><div class="snippet-captions"><div class="snippet-caption snippet-good"><span class="snippet-hint">No Violation</span><br/><span class="snippet-hint">Do.</span><div class="snippet-code snipper-code-good"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class Price (
+  val currency: Currency,
+  val amount: Float,
+) {
+  fun toCurrency(newCurrency: Currency): Float {
+    return Currency.rate(currency, newCurrency) * amount
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation In Constructor</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class Price (
+  @Inject
+  val currencyConverter: CurrencyConverter,
+  val amount: Float,
+) {
+  fun toCurrency(newCurrency: Currency): Float {
+    return currencyConverter.rate(currency, newCurrency) * amount
+  }
+}
+
+                </code></pre></div></div>
+<div class="snippet-caption snippet-bad"><span class="snippet-hint">Violation In Getter</span><br/><span class="snippet-hint">Don't.</span><div class="snippet-code snipper-code-bad"><pre><code class="language-kotlin">
+package some.packages
+
+@ValueType
+data class USDPrice (
+  val amount: Float,
+) {
+  fun getInEuros(@Autowired currencyConverter: CurrencyConverter): Float {
+    return currencyConverter.rate("USD", "EUR") * amount
+  }
+}
+
+                </code></pre></div></div></div></div></div></section></div></div>
+              </body>
+            </html>
