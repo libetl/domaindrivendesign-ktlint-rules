@@ -81,7 +81,10 @@ object GenerateDocumentation {
                                     "${it.value[0]} ${it.value[1]}"
                                 }
                             }
-                        }
+                        } +
+                            "div"("class" to "padding-block") {
+                                "&nbsp;"
+                            }
                     } +
                         "div"("class" to "mdl-cell mdl-cell--9-col mdl-cell--12-col-phone") {
                             "div"("class" to "snippet-captions") {
@@ -152,6 +155,16 @@ object GenerateDocumentation {
                 <style>
                 body {
                   background-color: black;
+                }
+                
+                h6 {
+                  position: sticky;
+                  top: 0
+                }
+                
+                .padding-block {
+                  width: 100%;
+                  height: 100%;
                 }
                 
                 .snippet-good {
