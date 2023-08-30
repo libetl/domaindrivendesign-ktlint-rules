@@ -11,13 +11,13 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 
-class GatewayOrRepositoryMustHaveOnlyOneTemplateVariable :
+internal class GatewayOrRepositoryMustHaveOnlyOneTemplateVariable :
     Rule("gateway-or-repository-must-have-only-one-template-variable") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -25,7 +25,9 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariable :
 
         if (!classInformation.annotationNames.contains("Gateway") &&
             !classInformation.annotationNames.contains("Repository")
-        ) return
+        ) {
+            return
+        }
 
         val currentFileImports = classInformation.imports
 
@@ -46,11 +48,11 @@ class GatewayOrRepositoryMustHaveOnlyOneTemplateVariable :
 
     private fun EmitFunction.problemWith(
         startOffset: Int,
-        tooMuchOccurrences: Map<String?, Int>
+        tooMuchOccurrences: Map<String?, Int>,
     ) =
         this(
             startOffset,
             "This infra role defines more than one *Template class. Only one is allowed. (found : $tooMuchOccurrences)",
-            false
+            false,
         )
 }

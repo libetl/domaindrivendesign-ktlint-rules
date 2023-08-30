@@ -7,12 +7,12 @@ import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 
-class AClassWithoutFunctionMustBeADataClass : Rule("a-class-without-function-must-be-a-data-class") {
+internal class AClassWithoutFunctionMustBeADataClass : Rule("a-class-without-function-must-be-a-data-class") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -41,6 +41,6 @@ class AClassWithoutFunctionMustBeADataClass : Rule("a-class-without-function-mus
             startOffset,
             "This class $className does not have any function. Should not it be a data class ? In any case," +
                 "Domain Driven Design discourages the use of anemic classes (POJO or value objects)",
-            false
+            false,
         )
 }

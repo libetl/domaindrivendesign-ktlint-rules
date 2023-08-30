@@ -18,7 +18,7 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.variables
 
-class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value-type") {
+internal class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value-type") {
 
     companion object {
         private var listOfDataClasses: MutableSet<String> = mutableSetOf()
@@ -31,7 +31,7 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.elementType == KtStubElementTypes.CLASS) {
             val classInformation = node.psi as KtClass
@@ -42,6 +42,16 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
             ) {
                 classInformation.fqName?.asString()?.let { listOfDataClasses.add(it) }
             }
+            return
+        }
+    }
+
+    override fun afterVisitChildNodes(
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitFunction,
+    ) {
+        if (node.elementType == KtStubElementTypes.CLASS) {
             return
         }
 
@@ -79,12 +89,12 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
                     "RestController",
                     "Controller",
                     "RabbitListener",
-                    "Endpoint"
-                )
+                    "Endpoint",
+                ),
             ).isEmpty() &&
             listOfDataClasses.contains(
                 currentFileImports[function.valueParameters[0].typeName]
-                    ?: "$owningPackage.${function.valueParameters[0].typeName}"
+                    ?: "$owningPackage.${function.valueParameters[0].typeName}",
             ) &&
             variables.none { members.contains(it) }
         ) {
@@ -92,7 +102,7 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
                 node.startOffset,
                 function.fqName?.asString() ?: "(not found)",
                 function.valueParameters[0].name ?: "(not found)",
-                function.valueParameters[0].typeName ?: "(not found)"
+                function.valueParameters[0].typeName ?: "(not found)",
             )
         }
     }
@@ -102,6 +112,6 @@ class FunctionShouldBeOwnedByValueType : Rule("function-should-be-owned-by-value
             startOffset,
             "The function $name uses the value type $valueName ($valueType) as its only parameter.\n" +
                 "In this situation, you should make it a member of $valueType.",
-            false
+            false,
         )
 }

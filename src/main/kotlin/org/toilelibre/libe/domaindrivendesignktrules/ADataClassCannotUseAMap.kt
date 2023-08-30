@@ -1,6 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.ast.isPartOf
+import com.pinterest.ktlint.rule.engine.core.api.isPartOf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtParameter
@@ -8,12 +8,12 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
-class ADataClassCannotUseAMap : Rule("data-class-cannot-use-a-map") {
+internal class ADataClassCannotUseAMap : Rule("data-class-cannot-use-a-map") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.elementType != KtStubElementTypes.VALUE_PARAMETER) {
             return
@@ -47,6 +47,6 @@ class ADataClassCannotUseAMap : Rule("data-class-cannot-use-a-map") {
             startOffset,
             "This variable : $name is a map (we cannot accept map as data class members because marshalling / " +
                 "unmarshalling has a lot of concerns)",
-            false
+            false,
         )
 }

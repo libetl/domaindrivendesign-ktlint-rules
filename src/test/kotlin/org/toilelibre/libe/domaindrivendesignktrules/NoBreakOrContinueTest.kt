@@ -1,18 +1,23 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class NoBreakOrContinueTest {
 
     @Test
     fun testViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoBreakOrContinue() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 fun someMethod() {
@@ -23,25 +28,26 @@ fun someMethod() {
     if (i == 4) break
   }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoBreakOrContinue() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain.all.the.elements(
             LintError(
                 line = 6,
                 col = 17,
-                ruleId = "no-break-or-continue",
-                detail = "Loop or statement breakers like break or continue are not allowed. Please do it wiser"
+                ruleId = RuleId("$rulesetName:no-break-or-continue"),
+                canBeAutoCorrected = false,
+                detail = "Loop or statement breakers like break or continue are not allowed. Please do it wiser",
             ),
             LintError(
                 line = 8,
                 col = 17,
-                ruleId = "no-break-or-continue",
-                detail = "Loop or statement breakers like break or continue are not allowed. Please do it wiser"
-            )
+                ruleId = RuleId("$rulesetName:no-break-or-continue"),
+                canBeAutoCorrected = false,
+                detail = "Loop or statement breakers like break or continue are not allowed. Please do it wiser",
+            ),
         )
     }
 }

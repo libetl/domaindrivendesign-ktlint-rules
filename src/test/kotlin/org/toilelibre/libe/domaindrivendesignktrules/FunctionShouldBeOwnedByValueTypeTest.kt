@@ -1,18 +1,23 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class FunctionShouldBeOwnedByValueTypeTest {
 
     @Test
     fun testNoViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -32,22 +37,21 @@ data class Price (
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationWhenTheFunctionUsesAClassMember() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -59,22 +63,21 @@ class PriceConverter(val currencyHelper: CurrencyHelper) {
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationWhenTheFunctionUsesAComponent() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package com.company.service.test.infra.gateways.configservice
 
 import com.company.library.configuration.configservice.resolver.ConfigurationResolver
@@ -98,22 +101,21 @@ class ArrangerCardsToggler(private val config: ConfigurationResolver) {
                 config.resolve("arrangercc", params) as String? == "1"
         }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationWhenTheFunctionUsesAReceivedType() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
     package com.company.service.test.domain.booking
 
     import com.company.service.test.domain.payment.Instance
@@ -145,22 +147,21 @@ class ArrangerCardsToggler(private val config: ConfigurationResolver) {
                     .takeIf { it?.bookingContext?.userId == booking.traveler.userId }
         }
     }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationWhenTheFunctionUsesAClassFunction() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -176,22 +177,21 @@ class PriceConverter(val currencyHelper: CurrencyHelper) {
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationWhenTheFunctionIsAnExceptionHandler() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -208,22 +208,21 @@ class ExceptionHandler() {
     }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -235,20 +234,20 @@ class PriceConverter {
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { FunctionShouldBeOwnedByValueType() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 7,
                 col = 3,
-                ruleId = "function-should-be-owned-by-value-type",
+                ruleId = RuleId("$rulesetName:function-should-be-owned-by-value-type"),
+                canBeAutoCorrected = false,
                 detail = "The function some.packages.PriceConverter.getRate uses the value type newCurrency (Currency) as its only parameter.\n" +
-                    "In this situation, you should make it a member of Currency."
-            )
+                    "In this situation, you should make it a member of Currency.",
+            ),
         )
     }
 }

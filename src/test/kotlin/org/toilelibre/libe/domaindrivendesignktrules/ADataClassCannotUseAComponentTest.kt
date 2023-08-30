@@ -1,18 +1,23 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class ADataClassCannotUseAComponentTest {
 
     @Test
     fun testNoViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { ADataClassCannotUseAComponent() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -25,22 +30,21 @@ data class Price (
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { ADataClassCannotUseAComponent() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testViolationInConstructor() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { ADataClassCannotUseAComponent() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -54,30 +58,30 @@ data class Price (
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { ADataClassCannotUseAComponent() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 5,
                 col = 3,
-                ruleId = "data-class-cannot-use-a-component",
+                ruleId = RuleId("$rulesetName:data-class-cannot-use-a-component"),
+                canBeAutoCorrected = false,
                 detail = "This variable : some.packages.Price.currencyConverter is a spring component. Components cannot be used in data classes.\n" +
-                    "If you need them for data injection (using jackson / graphQL), you need to fork the data class as a serialization bean"
-            )
+                    "If you need them for data injection (using jackson / graphQL), you need to fork the data class as a serialization bean",
+            ),
         )
     }
 
     @Test
     fun testViolationInGetter() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { ADataClassCannotUseAComponent() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @ValueType
@@ -89,20 +93,20 @@ data class USDPrice (
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { ADataClassCannotUseAComponent() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 7,
                 col = 18,
-                ruleId = "data-class-cannot-use-a-component",
+                ruleId = RuleId("$rulesetName:data-class-cannot-use-a-component"),
+                canBeAutoCorrected = false,
                 detail = "This variable : currencyConverter is a spring component. Components cannot be used in data classes.\n" +
-                    "If you need them for data injection (using jackson / graphQL), you need to fork the data class as a serialization bean"
-            )
+                    "If you need them for data injection (using jackson / graphQL), you need to fork the data class as a serialization bean",
+            ),
         )
     }
 }

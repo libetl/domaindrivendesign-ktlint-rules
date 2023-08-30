@@ -5,12 +5,12 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 
-class DataClassNotAnnotated : Rule("data-class-not-annotated") {
+internal class DataClassNotAnnotated : Rule("data-class-not-annotated") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -21,7 +21,7 @@ class DataClassNotAnnotated : Rule("data-class-not-annotated") {
         val annotationNames = classInformation.annotationNames
 
         if (isDataClass && listOf("ForeignModel", "ValueType", "Entity", "Aggregate")
-            .intersect(annotationNames).isEmpty()
+                .intersect(annotationNames).isEmpty()
         ) {
             emit.problemWith(node.startOffset, classInformation.fqName.toString())
         }
@@ -31,6 +31,6 @@ class DataClassNotAnnotated : Rule("data-class-not-annotated") {
         this(
             startOffset,
             "This data class is not annotated with @ForeignModel, @ValueType, @Entity or @Aggregate : $className",
-            false
+            false,
         )
 }

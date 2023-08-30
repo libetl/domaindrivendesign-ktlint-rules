@@ -7,12 +7,12 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
-class ADataClassCannotUseAComponent : Rule("data-class-cannot-use-a-component") {
+internal class ADataClassCannotUseAComponent : Rule("data-class-cannot-use-a-component") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.elementType != KtStubElementTypes.VALUE_PARAMETER) {
             return
@@ -29,11 +29,11 @@ class ADataClassCannotUseAComponent : Rule("data-class-cannot-use-a-component") 
         if (!isDataClass) return
 
         if (parameter.modifierList?.annotationEntries?.mapNotNull { it.shortName?.asString() }
-            ?.any { listOf("Inject", "Autowired").contains(it) } == true
+                ?.any { listOf("Inject", "Autowired").contains(it) } == true
         ) {
             emit.problemWith(
                 node.startOffset,
-                parameter.fqName?.asString() ?: parameter.name ?: "(not found)"
+                parameter.fqName?.asString() ?: parameter.name ?: "(not found)",
             )
         }
     }
@@ -43,6 +43,6 @@ class ADataClassCannotUseAComponent : Rule("data-class-cannot-use-a-component") 
             startOffset,
             "This variable : $name is a spring component. Components cannot be used in data classes.\n" +
                 "If you need them for data injection (using jackson / graphQL), you need to fork the data class as a serialization bean",
-            false
+            false,
         )
 }

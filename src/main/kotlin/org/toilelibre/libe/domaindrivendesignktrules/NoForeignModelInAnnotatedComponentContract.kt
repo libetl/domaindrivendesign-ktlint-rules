@@ -15,7 +15,16 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.parameterTypes
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 
-class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-annotated-component-contract") {
+internal class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-annotated-component-contract") {
+
+    val KtClass.relevantMethods get() =
+        if (annotationNames.intersect(listOf("Gateway", "Repository"))
+                .isNotEmpty()
+        ) {
+            methods.filter { it.isPublic || it.isProtected() }
+        } else {
+            methods
+        }
 
     companion object {
         private var listOfMethodParameterTypes: MutableMap<String, List<String>> = mutableMapOf()
@@ -31,21 +40,15 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
         val classInformation = node.psi as KtClass
-
-        val currentFileImports = classInformation.imports
-        val owningPackage = classInformation.getNonStrictParentOfType(KtFile::class.java)
-            ?.getChildOfType<KtPackageDirective>()
-            ?.fqName
-
         if (classInformation.annotationNames.contains("ForeignModel")) {
             val violations: Map<String?, List<String?>> = mapOf(
                 classInformation.fqName.toString() to
-                    (listOfMethodParameterTypes[classInformation.fqName.toString()] ?: listOf())
+                    (listOfMethodParameterTypes[classInformation.fqName.toString()] ?: listOf()),
             )
 
             emit.problemWith(node.startOffset, violations)
@@ -54,33 +57,12 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
             return
         }
 
-        if (classInformation.annotationNames.intersect(
-                listOf(
-                        "Action",
-                        "DomainService",
-                        "Gateway",
-                        "Repository"
-                    )
-            ).isEmpty()
-        ) {
-            return
-        }
+        val currentFileImports = classInformation.imports
+        val owningPackage = classInformation.getNonStrictParentOfType(KtFile::class.java)
+            ?.getChildOfType<KtPackageDirective>()
+            ?.fqName
 
-        val methods =
-            if (classInformation.annotationNames.intersect(listOf("Gateway", "Repository"))
-                .isNotEmpty()
-            ) {
-                classInformation.methods.filter { it.isPublic || it.isProtected() }
-            } else classInformation.methods
-
-        val violations =
-            methods.map { method ->
-                method.name to method.parameterTypes.filter { parameter ->
-                    listOfForeignModels.contains(currentFileImports[parameter.typeName])
-                }.map { it.typeName }
-            }.filter { it.second.isNotEmpty() }.toMap()
-
-        methods.forEach { method ->
+        classInformation.relevantMethods.forEach { method ->
             method.parameterTypes.forEach { parameter ->
                 val fullyQualifiedName =
                     currentFileImports[parameter.typeName] ?: "$owningPackage.${parameter.typeName}"
@@ -91,6 +73,41 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
                         )
             }
         }
+    }
+
+    override fun afterVisitChildNodes(
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitFunction,
+    ) {
+        if (node.isNotAClass()) return
+
+        val classInformation = node.psi as KtClass
+
+        val currentFileImports = classInformation.imports
+
+        if (classInformation.annotationNames.contains("ForeignModel")) {
+            return
+        }
+
+        if (classInformation.annotationNames.intersect(
+                listOf(
+                    "Action",
+                    "DomainService",
+                    "Gateway",
+                    "Repository",
+                ),
+            ).isEmpty()
+        ) {
+            return
+        }
+
+        val violations =
+            classInformation.relevantMethods.map { method ->
+                method.name to method.parameterTypes.filter { parameter ->
+                    listOfForeignModels.contains(currentFileImports[parameter.typeName])
+                }.map { it.typeName }
+            }.filter { it.second.isNotEmpty() }.toMap()
 
         emit.problemWith(node.startOffset, violations)
     }
@@ -103,7 +120,9 @@ class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-ann
                 startOffset,
                 "Foreign models have been found in some Action or DomainService or Gateway or Repository" +
                     " contract : $violations",
-                false
+                false,
             )
-        } else Unit
+        } else {
+            Unit
+        }
 }

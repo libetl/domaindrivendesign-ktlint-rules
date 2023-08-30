@@ -5,14 +5,14 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
 
 group = "org.toile-libre.libe"
-version = "2.0.8"
+version = "3.0.0"
 
 plugins {
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-    id("org.jetbrains.kotlin.jvm") version "1.7.10"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
+    id("org.jetbrains.kotlin.jvm") version "1.9.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
     id("io.codearte.nexus-staging") version "0.30.0"
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.8.20"
     jacoco
     application
     idea
@@ -29,7 +29,7 @@ buildscript {
     dependencies {
         classpath(kotlin("gradle-plugin"))
         classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4+")
-        classpath("org.jlleitschuh.gradle:ktlint-gradle:11.0.0")
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:11.5.1")
     }
 }
 
@@ -59,16 +59,19 @@ kotlin {
 
 dependencies {
     compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
-    compileOnly("com.pinterest:ktlint:0.43.2")
+    compileOnly("com.pinterest:ktlint:0.50.0")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect")
-    api("com.pinterest.ktlint:ktlint-core:0.43.2")
-    testImplementation("org.junit.platform:junit-platform-commons:1.9.0")
-    testImplementation("org.junit.platform:junit-platform-engine:1.9.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.0")
-    testImplementation("com.pinterest.ktlint:ktlint-test:0.43.2")
+    api("com.pinterest.ktlint:ktlint-core:0.49.1")
+    api("com.pinterest.ktlint:ktlint-cli-ruleset-core:0.49.1")
+    api("com.pinterest.ktlint:ktlint-rule-engine-core:0.49.1")
+    testImplementation("org.junit.platform:junit-platform-commons:1.10.0")
+    testImplementation("org.junit.platform:junit-platform-engine:1.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("com.pinterest.ktlint:ktlint-test:0.49.1")
+    testImplementation("com.pinterest.ktlint:ktlint-rule-engine:0.49.1")
     testImplementation("com.winterbe:expekt:0.5.0")
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -76,12 +79,12 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "17"
 }
 
 dependencies {
     // you can create a ktlint run config with that
-    compileOnly("com.pinterest:ktlint:0.43.2")
+    compileOnly("com.pinterest:ktlint:0.49.1")
     compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 }
 
@@ -101,7 +104,7 @@ configure<IdeaModel> {
 }
 
 ktlint {
-    version.set("0.43.2")
+    version.set("0.50.0")
     debug.set(false)
     verbose.set(false)
     android.set(false)
@@ -122,8 +125,8 @@ ktlint {
 }
 
 jacoco {
-    toolVersion = "0.8.3"
-    reportsDirectory.dir("$buildDir/customJacocoReportDir")
+    toolVersion = "0.8.10"
+    reportsDirectory.dir("${project.getLayout().getBuildDirectory()}/customJacocoReportDir")
 }
 
 tasks.withType<Test> {
@@ -145,11 +148,11 @@ repositories {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
 }
 val sources by tasks.registering(Jar::class) {
     archiveBaseName.set(project.name)
@@ -202,7 +205,7 @@ publishing {
             url = URI("https://oss.sonatype.org/service/local/staging/deploy/maven2")
             credentials {
                 username = "libetl"
-                password = project.properties["signing.password"] as String
+                password = project.properties["signing.password"] as? String
             }
         }
     }

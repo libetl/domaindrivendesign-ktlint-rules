@@ -29,10 +29,11 @@ object GenerateDocumentation {
         return "<$this${attrs.joinToString("") { """ ${it.first}="${it.second}"""" }}>${
             StringBuilder().apply {
                 val result = nested(this)
-                if (result is Iterable<*> && result.all { it is Iterable<*> })
+                if (result is Iterable<*> && result.all { it is Iterable<*> }) {
                     this.append((result as Iterable<Iterable<*>>).flatten().joinToString(""))
-                else if (result is Iterable<*>) this.append(result.joinToString(""))
-                else if (result != null) this.append(result)
+                } else if (result is Iterable<*>) {
+                    this.append(result.joinToString(""))
+                } else if (result != null) this.append(result)
             }
         }</$this>"
     }
@@ -46,7 +47,7 @@ object GenerateDocumentation {
         val project = KotlinCoreEnvironment.createForProduction(
             disposable,
             compilerConfiguration,
-            EnvironmentConfigFiles.JVM_CONFIG_FILES
+            EnvironmentConfigFiles.JVM_CONFIG_FILES,
         ).project as MockProject
 
         val programStructureInterfaceFactory = PsiFileFactoryImpl.getInstance(project)
@@ -60,14 +61,14 @@ object GenerateDocumentation {
                 "org",
                 "toilelibre",
                 "libe",
-                "domaindrivendesignktrules"
-            )
+                "domaindrivendesignktrules",
+            ),
         ).asSequence().filter { it.fileName.toString().endsWith("Test.kt") }
             .map {
                 it.fileName.toString().replace("Test.kt", "") to programStructureInterfaceFactory.createFileFromText(
                     it.fileName.toString(),
                     KotlinLanguage.INSTANCE,
-                    it.readText()
+                    it.readText(),
                 ) as KtFile
             }.toMap()
 
@@ -92,13 +93,15 @@ object GenerateDocumentation {
                                     .filter { it.annotationNames.contains("Test") }
                                     .joinToString(separator = "\n") { function ->
                                         val good = function.variables.any { it.text == "empty" }
-                                        val code = (function.allThe<KtValueArgument>()
-                                            .filter {
-                                                it.isNamed() &&
-                                                    it.getArgumentName()?.referenceExpression?.getIdentifier()?.text == "text"
-                                            }
-                                            .allThe<KtStringTemplateExpression>().firstOrNull()
-                                            ?: function.allThe<KtStringTemplateExpression>().first()).text
+                                        val code = (
+                                            function.allThe<KtValueArgument>()
+                                                .filter {
+                                                    it.isNamed() &&
+                                                        it.getArgumentName()?.referenceExpression?.getIdentifier()?.text == "text"
+                                                }
+                                                .allThe<KtStringTemplateExpression>().firstOrNull()
+                                                ?: function.allThe<KtStringTemplateExpression>().first()
+                                            ).text
                                             .replace(Regex("^\"\"\""), "")
                                             .replace(Regex("\"\"\"$"), "")
                                         "div"("class" to "snippet-caption snippet-${if (good) "good" else "bad"}") {
@@ -318,13 +321,13 @@ object GenerateDocumentation {
                 $rules
               </body>
             </html>
-              """.trimIndent()
+        """.trimIndent()
 
         Paths.get(
             System.getProperty("user.dir"),
             "build",
             "reports",
-            "rules-doc.html"
+            "rules-doc.html",
         ).toFile().writeText(html)
     }
 }

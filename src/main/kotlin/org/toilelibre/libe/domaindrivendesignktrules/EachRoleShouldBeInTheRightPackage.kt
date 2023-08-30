@@ -5,11 +5,11 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 
-class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right-package") {
+internal class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right-package") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -25,7 +25,7 @@ class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right
             emit.problemWith(
                 node.startOffset,
                 className,
-                "not be annotated with Component (or should be moved to the infra package)"
+                "not be annotated with Component (or should be moved to the infra package)",
             )
         } else if (annotationNames.contains("Action") && !packageName.endsWith(".actions")) {
             emit.problemWith(node.startOffset, className, "be located in the actions package")
@@ -44,7 +44,7 @@ class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right
             emit.problemWith(
                 node.startOffset,
                 className,
-                "be annotated with @ForeignModel (or moved under the domain package)"
+                "be annotated with @ForeignModel (or moved under the domain package)",
             )
         }
     }
@@ -52,12 +52,12 @@ class EachRoleShouldBeInTheRightPackage : Rule("each-role-should-be-in-the-right
     private fun EmitFunction.problemWith(
         startOffset: Int,
         packageName: String,
-        problem: String
+        problem: String,
     ) =
         this(
             startOffset,
             "While checking the package structure for the class $packageName, " +
                 "it has been discovered that it should $problem",
-            false
+            false,
         )
 }

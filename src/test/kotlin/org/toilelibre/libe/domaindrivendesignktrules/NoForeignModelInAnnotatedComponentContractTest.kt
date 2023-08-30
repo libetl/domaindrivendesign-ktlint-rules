@@ -1,9 +1,14 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class NoForeignModelInAnnotatedComponentContractTest {
 
@@ -14,11 +19,11 @@ class NoForeignModelInAnnotatedComponentContractTest {
 
     @Test
     fun testViolationActionRoleFirst() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import kotlin.String
@@ -32,29 +37,29 @@ class B {
 
 @ForeignModel
 data class A
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 12,
                 col = 1,
-                ruleId = "no-foreign-model-in-annotated-component-contract",
-                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {org.toilelibre.libe.domaindrivendesignktrules.A=[org.toilelibre.libe.domaindrivendesignktrules.B.testingTheViolation]}"
-            )
+                ruleId = RuleId("$rulesetName:no-foreign-model-in-annotated-component-contract"),
+                canBeAutoCorrected = false,
+                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {org.toilelibre.libe.domaindrivendesignktrules.A=[org.toilelibre.libe.domaindrivendesignktrules.B.testingTheViolation]}",
+            ),
         )
     }
 
     @Test
     fun testViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import kotlin.String
@@ -68,29 +73,29 @@ class B {
     fun testingTheViolation(a: A) {
     }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 9,
                 col = 1,
-                ruleId = "no-foreign-model-in-annotated-component-contract",
-                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}"
-            )
+                ruleId = RuleId("$rulesetName:no-foreign-model-in-annotated-component-contract"),
+                canBeAutoCorrected = false,
+                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}",
+            ),
         )
     }
 
     @Test
     fun testViolationInInfra() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import kotlin.String
@@ -104,29 +109,29 @@ class B {
     fun testingTheViolation(a: A) {
     }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 9,
                 col = 1,
-                ruleId = "no-foreign-model-in-annotated-component-contract",
-                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}"
-            )
+                ruleId = RuleId("$rulesetName:no-foreign-model-in-annotated-component-contract"),
+                canBeAutoCorrected = false,
+                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}",
+            ),
         )
     }
 
     @Test
     fun testPrivateMethodInInfraShouldBeTolerated() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import kotlin.String
@@ -140,22 +145,21 @@ class B {
     private fun testingTheViolation(a: A) {
     }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testViolationWithReturnType() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import org.toilelibre.libe.domaindrivendesignktrules.A
@@ -172,29 +176,29 @@ class B {
       return A()
     }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 11,
                 col = 1,
-                ruleId = "no-foreign-model-in-annotated-component-contract",
-                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}"
-            )
+                ruleId = RuleId("$rulesetName:no-foreign-model-in-annotated-component-contract"),
+                canBeAutoCorrected = false,
+                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}",
+            ),
         )
     }
 
     @Test
     fun testViolationInDomainService() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package org.toilelibre.libe.domaindrivendesignktrules
 
 import kotlin.String
@@ -208,29 +212,29 @@ class B {
     fun testingTheViolation(a: A) {
     }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 9,
                 col = 1,
-                ruleId = "no-foreign-model-in-annotated-component-contract",
-                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}"
-            )
+                ruleId = RuleId("$rulesetName:no-foreign-model-in-annotated-component-contract"),
+                canBeAutoCorrected = false,
+                detail = "Foreign models have been found in some Action or DomainService or Gateway or Repository contract : {testingTheViolation=[A]}",
+            ),
         )
     }
 
     @Test
     fun shouldNotReportAnything() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages.actions
 
 import some.packages.domain.transverse.DomainDrivenDesignAnnotations.Action
@@ -245,11 +249,10 @@ class GetInstanceByRowId(private val storage: Storage) {
 
     infix fun retrievePaymentBy(`an id`: ObjectId): Instance? = storage rowMatching `an id`
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }

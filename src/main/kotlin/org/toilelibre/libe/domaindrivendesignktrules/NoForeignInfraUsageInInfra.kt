@@ -6,12 +6,12 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.imports
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 
-class NoForeignInfraUsageInInfra : Rule("no-foreign-infra-usage-in-infra") {
+internal class NoForeignInfraUsageInInfra : Rule("no-foreign-infra-usage-in-infra") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -46,6 +46,6 @@ class NoForeignInfraUsageInInfra : Rule("no-foreign-infra-usage-in-infra") {
             startOffset,
             "This class : $className is in infra package and uses at least one class from " +
                 "another infra package : $wrongImports",
-            false
+            false,
         )
 }

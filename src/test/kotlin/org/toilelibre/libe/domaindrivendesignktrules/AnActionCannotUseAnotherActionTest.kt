@@ -1,18 +1,23 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class AnActionCannotUseAnotherActionTest {
 
     @Test
     fun testViolation1() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AnActionCannotUseAnotherAction() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @Action
@@ -25,29 +30,29 @@ class MyAction2 {
 }
 
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AnActionCannotUseAnotherAction() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 7,
                 col = 1,
-                ruleId = "an-action-cannot-use-another-action",
-                detail = "Action MyAction2 should not use Action MyAction1"
-            )
+                ruleId = RuleId("$rulesetName:an-action-cannot-use-another-action"),
+                canBeAutoCorrected = false,
+                detail = "Action MyAction2 should not use Action MyAction1",
+            ),
         )
     }
 
     @Test
     fun testViolation2() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AnActionCannotUseAnotherAction() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @Action
@@ -60,19 +65,19 @@ class MyAction2 {
 }
 
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AnActionCannotUseAnotherAction() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 3,
                 col = 1,
-                ruleId = "an-action-cannot-use-another-action",
-                detail = "Action MyAction1 should not use Action MyAction2"
-            )
+                ruleId = RuleId("$rulesetName:an-action-cannot-use-another-action"),
+                canBeAutoCorrected = false,
+                detail = "Action MyAction1 should not use Action MyAction2",
+            ),
         )
     }
 }

@@ -1,64 +1,71 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class AClassWithoutFunctionMustBeADataClassTest {
 
     @Test
     fun testViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text = """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AClassWithoutFunctionMustBeADataClass() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 class MyClass {
   private var myFieldOne: Int
   private var myFieldTwo: String
   private var myFieldThree: Boolean
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AClassWithoutFunctionMustBeADataClass() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 2,
                 col = 1,
-                ruleId = "a-class-without-function-must-be-a-data-class",
-                detail = "This class some.packages.MyClass does not have any function. Should not it be a data class ? In any case,Domain Driven Design discourages the use of anemic classes (POJO or value objects)"
-            )
+                ruleId = RuleId("$rulesetName:a-class-without-function-must-be-a-data-class"),
+                canBeAutoCorrected = false,
+                detail = "This class some.packages.MyClass does not have any function. Should not it be a data class ? In any case,Domain Driven Design discourages the use of anemic classes (POJO or value objects)",
+            ),
         )
     }
 
     @Test
     fun testViolationWhileCheatingOnTheParentClass() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text = """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AClassWithoutFunctionMustBeADataClass() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 class MyClass : Object {
   private var myFieldOne: Int
   private var myFieldTwo: String
   private var myFieldThree: Boolean
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AClassWithoutFunctionMustBeADataClass() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 2,
                 col = 1,
-                ruleId = "a-class-without-function-must-be-a-data-class",
-                detail = "This class some.packages.MyClass does not have any function. Should not it be a data class ? In any case,Domain Driven Design discourages the use of anemic classes (POJO or value objects)"
-            )
+                ruleId = RuleId("$rulesetName:a-class-without-function-must-be-a-data-class"),
+                canBeAutoCorrected = false,
+                detail = "This class some.packages.MyClass does not have any function. Should not it be a data class ? In any case,Domain Driven Design discourages the use of anemic classes (POJO or value objects)",
+            ),
         )
     }
 }

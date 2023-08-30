@@ -1,6 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.ast.isPartOf
+import com.pinterest.ktlint.rule.engine.core.api.isPartOf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtParameter
@@ -8,12 +8,12 @@ import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
 import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
-class AllClassMembersMustBePrivateAndImmutable : Rule("no-class-member-public-or-mutable") {
+internal class AllClassMembersMustBePrivateAndImmutable : Rule("no-class-member-public-or-mutable") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.elementType != KtStubElementTypes.VALUE_PARAMETER) {
             return
@@ -49,8 +49,8 @@ class AllClassMembersMustBePrivateAndImmutable : Rule("no-class-member-public-or
         this(
             startOffset,
             "This variable : $name is ${if (isMutable) "" else "not "}mutable and is ${
-            if (isPrivate) "" else "not "
+                if (isPrivate) "" else "not "
             }private (and should be not mutable and private)",
-            false
+            false,
         )
 }

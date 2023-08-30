@@ -1,18 +1,23 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class AllClassMembersMustBePrivateAndImmutableTest {
 
     @Test
     fun testViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @Repository
@@ -25,63 +30,64 @@ class MyRepository(var dataSource: DataSource, private var jdbcUrl: String, val 
 
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain.all.the.elements(
             LintError(
                 line = 4,
                 col = 20,
-                ruleId = "no-class-member-public-or-mutable",
-                detail = "This variable : some.packages.MyRepository.dataSource is mutable and is not private (and should be not mutable and private)"
+                ruleId = RuleId("$rulesetName:no-class-member-public-or-mutable"),
+                canBeAutoCorrected = false,
+                detail = "This variable : some.packages.MyRepository.dataSource is mutable and is not private (and should be not mutable and private)",
             ),
             LintError(
                 line = 4,
                 col = 48,
-                ruleId = "no-class-member-public-or-mutable",
-                detail = "This variable : some.packages.MyRepository.jdbcUrl is mutable and is private (and should be not mutable and private)"
+                ruleId = RuleId("$rulesetName:no-class-member-public-or-mutable"),
+                canBeAutoCorrected = false,
+                detail = "This variable : some.packages.MyRepository.jdbcUrl is mutable and is private (and should be not mutable and private)",
             ),
             LintError(
                 line = 4,
                 col = 77,
-                ruleId = "no-class-member-public-or-mutable",
-                detail = "This variable : some.packages.MyRepository.password is not mutable and is not private (and should be not mutable and private)"
-            )
+                ruleId = RuleId("$rulesetName:no-class-member-public-or-mutable"),
+                canBeAutoCorrected = false,
+                detail = "This variable : some.packages.MyRepository.password is not mutable and is not private (and should be not mutable and private)",
+            ),
         )
     }
 
     @Test
     fun testNoViolationForDataClasses() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @Entity
 @ForeignModel
 data class Account(val id: ObjectId, val firstName: String, val lastName: String)
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationForNonVarAndNonValParameters() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 class Tester(id: ObjectId) {
@@ -90,22 +96,21 @@ class Tester(id: ObjectId) {
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }
 
     @Test
     fun testNoViolationForOverridenValueParameters() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 class Tester(override var id: ObjectId) {
@@ -114,15 +119,14 @@ class Tester(override var id: ObjectId) {
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        KtLintRuleEngine(setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 class TesterWithCoroutineContext(@Qualifier override var id: ObjectId) {
@@ -131,11 +135,10 @@ class TesterWithCoroutineContext(@Qualifier override var id: ObjectId) {
   }
 }
 
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }

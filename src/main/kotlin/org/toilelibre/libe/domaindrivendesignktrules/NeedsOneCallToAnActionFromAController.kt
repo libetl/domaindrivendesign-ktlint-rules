@@ -1,6 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.ast.parent
+import com.pinterest.ktlint.rule.engine.core.api.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFunction
@@ -13,12 +13,12 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAMethod
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.variables
 
-class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-from-a-controller") {
+internal class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-from-a-controller") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit
+        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit,
     ) {
         if (node.isNotAMethod()) return
         val method = node.psi as KtFunction
@@ -39,7 +39,7 @@ class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-
         if (classInformation.name?.contains("GraphQL") == true) return
 
         if (classInformation.annotationNames.intersect(
-                listOf("Controller", "RestController", "Endpoint")
+                listOf("Controller", "RestController", "Endpoint"),
             ).isEmpty() && !isListener
         ) {
             return
@@ -69,6 +69,6 @@ class NeedsOneCallToAnActionFromAController : Rule("needs-one-call-to-an-action-
         this(
             startOffset,
             "This function $functionName does not call anything in the actions package. And it should.",
-            false
+            false,
         )
 }

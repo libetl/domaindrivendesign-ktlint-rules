@@ -7,12 +7,12 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 
-class ActionOnlyHasOnePublicMethod : Rule("only-one-public-method-in-action") {
+internal class ActionOnlyHasOnePublicMethod : Rule("only-one-public-method-in-action") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -32,7 +32,7 @@ class ActionOnlyHasOnePublicMethod : Rule("only-one-public-method-in-action") {
                 node.startOffset,
                 classInformation.fqName.toString(),
                 publicMethodsCount,
-                nonPublicMethodsCount
+                nonPublicMethodsCount,
             )
         }
     }
@@ -41,12 +41,12 @@ class ActionOnlyHasOnePublicMethod : Rule("only-one-public-method-in-action") {
         startOffset: Int,
         className: String,
         publicMethodsCount: Int,
-        nonPublicMethodsCount: Int
+        nonPublicMethodsCount: Int,
     ) =
         this(
             startOffset,
             "Action $className should have one public method (found $publicMethodsCount), " +
                 "and no private method (found $nonPublicMethodsCount)",
-            false
+            false,
         )
 }

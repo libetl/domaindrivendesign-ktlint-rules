@@ -1,18 +1,23 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.KtLint
+import com.pinterest.ktlint.rule.engine.api.Code
+import com.pinterest.ktlint.rule.engine.api.KtLintRuleEngine
+import com.pinterest.ktlint.rule.engine.api.LintError
+import com.pinterest.ktlint.rule.engine.core.api.RuleId
+import com.pinterest.ktlint.rule.engine.core.api.RuleProvider
 import com.winterbe.expekt.should
 import org.junit.jupiter.api.Test
+import org.toilelibre.libe.domaindrivendesignktrules.DomainDrivenDesignRuleSetProvider.Companion.rulesetName
 
 class NoForOrWhileInActionClassTest {
 
     @Test
     fun testViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForOrWhileInActionClass() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @Action
@@ -24,34 +29,34 @@ class MyAction {
     }
   }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForOrWhileInActionClass() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 7,
                 col = 5,
-                ruleId = "no-for-or-while-in-action-class",
+                ruleId = RuleId("$rulesetName:no-for-or-while-in-action-class"),
+                canBeAutoCorrected = false,
                 detail =
                 """Action contains a `for(. in .)`, this is discouraged.
 The business logic must be written in declarative programming.
 If you need to tell your reader that you are iterating over a group,
 you can consider implementing some idiomatics :
-(e.g. : forEachUserCalled {traveler ->...})"""
-            )
+(e.g. : forEachUserCalled {traveler ->...})""",
+            ),
         )
     }
 
     @Test
     fun testNestedWhile() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForOrWhileInActionClass() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 @Action
@@ -68,34 +73,34 @@ class MyAction {
     }
   }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForOrWhileInActionClass() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.contain(
             LintError(
                 line = 10,
                 col = 7,
-                ruleId = "no-for-or-while-in-action-class",
+                ruleId = RuleId("$rulesetName:no-for-or-while-in-action-class"),
+                canBeAutoCorrected = false,
                 detail =
                 """Action contains a `while(...){...}`, this is discouraged.
 The business logic must be written in declarative programming.
 If you need to tell your reader that you are iterating over a group,
 you can consider implementing some idiomatics :
-(e.g. : forEachUserCalled {traveler ->...})"""
-            )
+(e.g. : forEachUserCalled {traveler ->...})""",
+            ),
         )
     }
 
     @Test
     fun testNoViolation() {
-        val collector = mutableListOf<com.pinterest.ktlint.core.LintError>()
-        KtLint.lint(
-            KtLint.ExperimentalParams(
-                text =
-                """
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForOrWhileInActionClass() }))
+            .lint(
+                Code.fromSnippet(
+                    """
 package some.packages
 
 data class Traveler(val id: Int)
@@ -110,11 +115,10 @@ class MyAction {
     theTravelers.tookApart { println ("Hello " + it) }
   }
 }
-                """.trimIndent(),
-                ruleProviders = setOf(RuleProvider { NoForOrWhileInActionClass() }),
-                cb = { e, _ -> collector.add(e) }
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
             )
-        )
 
         collector.should.be.empty
     }

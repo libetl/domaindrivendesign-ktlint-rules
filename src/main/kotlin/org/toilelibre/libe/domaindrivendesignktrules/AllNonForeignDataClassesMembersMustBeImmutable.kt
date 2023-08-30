@@ -1,6 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.ast.isPartOf
+import com.pinterest.ktlint.rule.engine.core.api.isPartOf
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtParameter
@@ -9,12 +9,12 @@ import org.jetbrains.kotlin.psi.psiUtil.isAbstract
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 
-class AllNonForeignDataClassesMembersMustBeImmutable : Rule("no-non-foreign-data-class-member-mutable") {
+internal class AllNonForeignDataClassesMembersMustBeImmutable : Rule("no-non-foreign-data-class-member-mutable") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.elementType != KtStubElementTypes.VALUE_PARAMETER) {
             return
@@ -49,6 +49,6 @@ class AllNonForeignDataClassesMembersMustBeImmutable : Rule("no-non-foreign-data
         this(
             startOffset,
             "This variable : $name is mutable (should be immutable)",
-            false
+            false,
         )
 }

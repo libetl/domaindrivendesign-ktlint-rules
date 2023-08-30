@@ -6,7 +6,7 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.members
 
-class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action") {
+internal class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action") {
 
     companion object {
         private var listOfActions: MutableSet<String> = mutableSetOf<String>()
@@ -19,7 +19,7 @@ class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -28,6 +28,18 @@ class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action
         if (!classInformation.annotationNames.contains("Action")) return
 
         listOfActions.add(classInformation.name!!)
+    }
+
+    override fun afterVisitChildNodes(
+        node: ASTNode,
+        autoCorrect: Boolean,
+        emit: EmitFunction,
+    ) {
+        if (node.isNotAClass()) return
+
+        val classInformation = node.psi as KtClass
+
+        if (!classInformation.annotationNames.contains("Action")) return
 
         val violations = classInformation.members.filter {
             listOfActions.contains(it.first)
@@ -41,11 +53,11 @@ class AnActionCannotUseAnotherAction : Rule("an-action-cannot-use-another-action
     private fun EmitFunction.problemWith(
         startOffset: Int,
         action1: String,
-        action2: String
+        action2: String,
     ) =
         this(
             startOffset,
             "Action $action1 should not use Action $action2",
-            false
+            false,
         )
 }

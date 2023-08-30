@@ -1,6 +1,6 @@
 package org.toilelibre.libe.domaindrivendesignktrules
 
-import com.pinterest.ktlint.core.ast.nextCodeSibling
+import com.pinterest.ktlint.rule.engine.core.api.nextCodeSibling
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -19,14 +19,16 @@ import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.forEachDescendantOfType
 import org.jetbrains.kotlin.psi.stubs.elements.KtStubElementTypes
 
-object SomeHelpers {
+internal object SomeHelpers {
 
     private fun determineType(type: KtTypeElement?): String? =
         when (type) {
             is KtUserType -> type.referenceExpression?.getReferencedName()!!
             is KtNullableType -> if (type == type.innerType) {
                 null
-            } else determineType(type.innerType as KtTypeElement)
+            } else {
+                determineType(type.innerType as KtTypeElement)
+            }
 
             is KtFunctionType -> type.text
             else -> null
@@ -45,8 +47,10 @@ object SomeHelpers {
 
     val KtFunction.variables
         get(): List<KtReferenceExpression> =
-            (bodyBlockExpression?.statements ?: bodyExpression?.let { listOf(it) }
-            ?: (this as? KtNamedFunction)?.let { listOf(it) })
+            (
+                bodyBlockExpression?.statements ?: bodyExpression?.let { listOf(it) }
+                    ?: (this as? KtNamedFunction)?.let { listOf(it) }
+                )
                 ?.flatMap { it.allThe<KtReferenceExpression>().toList() } ?: listOf()
 
     fun ASTNode.isNotAClass() = this.elementType != KtStubElementTypes.CLASS
@@ -89,6 +93,6 @@ object SomeHelpers {
         "org.springframework.amqp.rabbit.core",
         "org.springframework.ws.client.core",
         "org.springframework.jdbc.core",
-        "org.springframework.web.reactive.function.client"
+        "org.springframework.web.reactive.function.client",
     )
 }

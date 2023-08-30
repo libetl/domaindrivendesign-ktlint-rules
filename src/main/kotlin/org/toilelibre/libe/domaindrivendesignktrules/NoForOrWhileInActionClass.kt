@@ -12,12 +12,12 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotAClass
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.methods
 
-class NoForOrWhileInActionClass : Rule("no-for-or-while-in-action-class") {
+internal class NoForOrWhileInActionClass : Rule("no-for-or-while-in-action-class") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotAClass()) return
 
@@ -41,7 +41,7 @@ class NoForOrWhileInActionClass : Rule("no-for-or-while-in-action-class") {
                         is KtWhileExpression -> "while(...){...}"
                         is KtDoWhileExpression -> "do{...}while"
                         else -> "loop"
-                    }
+                    },
                 )
             }
         }
@@ -49,7 +49,7 @@ class NoForOrWhileInActionClass : Rule("no-for-or-while-in-action-class") {
 
     private fun EmitFunction.problemWith(
         startOffset: Int,
-        kindOfLoop: String
+        kindOfLoop: String,
     ) =
         this(
             startOffset,
@@ -58,6 +58,6 @@ The business logic must be written in declarative programming.
 If you need to tell your reader that you are iterating over a group,
 you can consider implementing some idiomatics :
 (e.g. : forEachUserCalled {traveler ->...})""",
-            false
+            false,
         )
 }

@@ -5,12 +5,12 @@ import org.jetbrains.kotlin.psi.KtCatchClause
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.isNotACatchElement
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 
-class NoGenericCatch : Rule("no-generic-catch") {
+internal class NoGenericCatch : Rule("no-generic-catch") {
 
     override fun beforeVisitChildNodes(
         node: ASTNode,
         autoCorrect: Boolean,
-        emit: EmitFunction
+        emit: EmitFunction,
     ) {
         if (node.isNotACatchElement()) return
 
@@ -25,7 +25,7 @@ class NoGenericCatch : Rule("no-generic-catch") {
                 "java.lang.Exception",
                 "java.lang.Throwable",
                 "java.lang.RuntimeException",
-                "java.lang.Error"
+                "java.lang.Error",
             ).contains(exceptionClass)
         ) {
             emit.problemWith(node.startOffset, exceptionClass!!)
@@ -36,6 +36,6 @@ class NoGenericCatch : Rule("no-generic-catch") {
         this(
             startOffset,
             "Please avoid catching generic Exception classes... like $exceptionClass",
-            false
+            false,
         )
 }
