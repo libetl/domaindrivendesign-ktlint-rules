@@ -256,4 +256,31 @@ class GetInstanceByRowId(private val storage: Storage) {
 
         collector.should.be.empty
     }
+
+    @Test
+    fun shouldNotComplainWhenUsedInAnEndpoint() {
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { NoForeignModelInAnnotatedComponentContract() }))
+            .lint(
+                Code.fromSnippet(
+                    """
+package some.packages.infra.controller
+
+import some.packages.infra.database.Storage
+
+@Endpoint
+class SomeController {
+
+    infix fun retrieveAccountBy(`an id`: AccountId): Account? = storage rowMatching `an id`
+}
+
+@ForeignModel
+data class AccountId(val id: Int)
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
+            )
+
+        collector.should.be.empty
+    }
 }

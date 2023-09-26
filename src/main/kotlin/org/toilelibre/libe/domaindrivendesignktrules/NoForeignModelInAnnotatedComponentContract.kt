@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPackageDirective
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 import org.jetbrains.kotlin.psi.psiUtil.isProtected
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.annotationNames
@@ -18,7 +19,9 @@ import org.toilelibre.libe.domaindrivendesignktrules.SomeHelpers.typeName
 internal class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-model-in-annotated-component-contract") {
 
     val KtClass.relevantMethods get() =
-        if (annotationNames.intersect(listOf("Gateway", "Repository"))
+        if (annotationNames.intersect(listOf("Endpoint")).isNotEmpty()) {
+            methods.filter { it.isProtected() || it.isPrivate() }
+        } else if (annotationNames.intersect(listOf("Gateway", "Repository"))
                 .isNotEmpty()
         ) {
             methods.filter { it.isPublic || it.isProtected() }
@@ -46,13 +49,6 @@ internal class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-mod
 
         val classInformation = node.psi as KtClass
         if (classInformation.annotationNames.contains("ForeignModel")) {
-            val violations: Map<String?, List<String?>> = mapOf(
-                classInformation.fqName.toString() to
-                    (listOfMethodParameterTypes[classInformation.fqName.toString()] ?: listOf()),
-            )
-
-            emit.problemWith(node.startOffset, violations)
-
             listOfForeignModels.add(classInformation.fqName.toString())
             return
         }
@@ -83,7 +79,17 @@ internal class NoForeignModelInAnnotatedComponentContract : Rule("no-foreign-mod
         if (node.isNotAClass()) return
 
         val classInformation = node.psi as KtClass
+        if (classInformation.annotationNames.contains("ForeignModel")) {
+            val violations: Map<String?, List<String?>> = mapOf(
+                classInformation.fqName.toString() to
+                        (listOfMethodParameterTypes[classInformation.fqName.toString()] ?: listOf()),
+            )
 
+            emit.problemWith(node.startOffset, violations)
+
+            listOfForeignModels.add(classInformation.fqName.toString())
+            return
+        }
         val currentFileImports = classInformation.imports
 
         if (classInformation.annotationNames.contains("ForeignModel")) {
