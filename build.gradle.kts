@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
 
 group = "org.toile-libre.libe"
-version = "3.0.0"
+version = "3.0.1"
 
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
