@@ -5,10 +5,10 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
 
 group = "org.toile-libre.libe"
-version = "3.0.1"
+version = "3.0.2"
 
 plugins {
-    id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
     id("org.jetbrains.kotlin.jvm") version "1.9.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
     id("io.codearte.nexus-staging") version "0.30.0"
@@ -59,22 +59,22 @@ kotlin {
 
 dependencies {
     compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
-    compileOnly("com.pinterest:ktlint:0.50.0")
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect")
-    api("com.pinterest.ktlint:ktlint-core:0.49.1")
-    api("com.pinterest.ktlint:ktlint-cli-ruleset-core:0.49.1")
-    api("com.pinterest.ktlint:ktlint-rule-engine-core:0.49.1")
+    compileOnly("com.pinterest.ktlint:ktlint-cli:1.0.0")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    api("com.pinterest.ktlint:ktlint-cli-ruleset-core:1.0.0")
+    api("com.pinterest.ktlint:ktlint-rule-engine-core:1.0.0")
+    testRuntimeOnly("org.slf4j:slf4j-api:2.0.9")
     testImplementation("org.junit.platform:junit-platform-commons:1.10.0")
     testImplementation("org.junit.platform:junit-platform-engine:1.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-    testImplementation("com.pinterest.ktlint:ktlint-test:0.49.1")
-    testImplementation("com.pinterest.ktlint:ktlint-rule-engine:0.49.1")
+    testImplementation("com.pinterest.ktlint:ktlint-test:1.0.0")
+    testImplementation("com.pinterest.ktlint:ktlint-rule-engine:1.0.0")
     testImplementation("com.winterbe:expekt:0.5.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.jetbrains.kotlin:kotlin-reflect")
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
 }
 
 tasks.withType<KotlinCompile> {
@@ -84,7 +84,7 @@ tasks.withType<KotlinCompile> {
 
 dependencies {
     // you can create a ktlint run config with that
-    compileOnly("com.pinterest:ktlint:0.49.1")
+    compileOnly("com.pinterest.ktlint:ktlint-cli:1.0.0")
     compileOnly("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 }
 
@@ -95,7 +95,7 @@ nexusStaging {
 
 configure<IdeaModel> {
     project {
-        languageLevel = IdeaLanguageLevel(JavaVersion.VERSION_1_8)
+        languageLevel = IdeaLanguageLevel(JavaVersion.VERSION_17)
     }
     module {
         isDownloadJavadoc = true
@@ -104,7 +104,7 @@ configure<IdeaModel> {
 }
 
 ktlint {
-    version.set("0.50.0")
+    version.set("1.0.0")
     debug.set(false)
     verbose.set(false)
     android.set(false)
