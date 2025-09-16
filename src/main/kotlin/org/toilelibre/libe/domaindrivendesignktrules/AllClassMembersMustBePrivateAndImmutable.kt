@@ -30,10 +30,11 @@ internal class AllClassMembersMustBePrivateAndImmutable : Rule("no-class-member-
         val owningClass = parameter.getNonStrictParentOfType(KtClass::class.java)
 
         val isDataClass = owningClass?.isData() ?: false || owningClass?.isEnum() ?: false
+        val isValueClass = owningClass?.isValue() ?: false
 
         if (owningClass?.isAbstract() == true) return
 
-        if (isDataClass || !parameter.hasValOrVar()) return
+        if (isDataClass || isValueClass || !parameter.hasValOrVar()) return
 
         if (parameter.modifierList?.text?.contains("override") == true) return
 

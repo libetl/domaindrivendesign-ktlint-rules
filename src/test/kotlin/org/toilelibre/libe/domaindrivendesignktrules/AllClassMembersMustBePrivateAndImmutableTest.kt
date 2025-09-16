@@ -142,4 +142,22 @@ class TesterWithCoroutineContext(@Qualifier override var id: ObjectId) {
 
         collector.should.be.empty
     }
+
+    @Test
+    fun testNoViolationForInlineValueClassWithNonPrivateParameters() {
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AllClassMembersMustBePrivateAndImmutable() }))
+            .lint(
+                Code.fromSnippet(
+                    """
+package some.packages
+@JvmInline
+value class MyClassValue(val value: Int)
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
+            )
+
+        collector.should.be.empty
+    }
 }

@@ -68,4 +68,22 @@ class MyClass : Object {
             ),
         )
     }
+
+    @Test
+    fun testNoViolationForInlineValueClass() {
+        val collector = mutableListOf<LintError>()
+        KtLintRuleEngine(setOf(RuleProvider { AClassWithoutFunctionMustBeADataClass() }))
+            .lint(
+                Code.fromSnippet(
+                    """
+package some.packages
+@JvmInline
+value class MyClassValue(val value: Int)
+                    """.trimIndent(),
+                ),
+                callback = { e -> collector.add(e) },
+            )
+
+        collector.should.be.empty
+    }
 }
