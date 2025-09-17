@@ -21,7 +21,7 @@ internal class AClassWithoutFunctionMustBeADataClass : Rule("a-class-without-fun
         val superClassName = classInformation.getColon()
             ?.getNextSiblingIgnoringWhitespaceAndComments(false)?.text ?: "Object"
 
-        val doesNotRequireAMethod = classInformation.isData() || classInformation.isEnum() ||
+        val doesNotRequireAMethod = classInformation.isData() || classInformation.isEnum() || classInformation.isValue() ||
             classInformation.isAnnotation() || classInformation.isAbstract() ||
             (
                 classInformation.getColon() != null &&
