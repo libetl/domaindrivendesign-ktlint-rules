@@ -5,10 +5,10 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.net.URI
 
 group = "org.toile-libre.libe"
-version = "3.0.3"
+version = "3.0.4"
 
 plugins {
-    id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
     id("org.jetbrains.kotlin.jvm") version "1.9.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
     id("io.codearte.nexus-staging") version "0.30.0"
@@ -202,10 +202,10 @@ publishing {
     }
     repositories {
         maven {
-            url = URI("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+            url = URI("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
-                username = "libetl"
-                password = project.properties["signing.password"] as? String
+                username = project.properties["ossrhUsername"] as? String
+                password = project.properties["ossrhPassword"] as? String
             }
         }
     }
